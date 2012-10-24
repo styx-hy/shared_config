@@ -1,0 +1,125 @@
+##################################################################
+set from = "tcsyxx6350@gmail.com"
+set realname = "Yang Hong"
+
+set imap_user = "tcsyxx6350@gmail.com"
+set imap_pass = "900729"
+set spoolfile = "imaps://imap.gmail.com:993/INBOX"
+set folder = "imaps://imap.gmail.com:993"
+set record= "imaps://imap.gmail.com/[Gmail]/Sent Mail"
+set postponed="imaps://imap.gmail.com/[Gmail]/Drafts"
+
+set header_cache="~/.mutt/cache/headers"
+set message_cachedir="~/.mutt/cache/bodies"
+set certificate_file="~/.mutt/certificates"
+
+##################################################################
+# set editor from terminal
+set editor="emacs -nw"
+
+# set mail sender program
+set sendmail="/usr/bin/msmtp"
+
+# # setup mail folder
+# set folder="~/mail"
+# set mbox="~/mail/inbox"
+# set mbox_type=maildir
+# set spoolfile="~/mail/inbox"
+# set postponed="~/mail/postponed"
+# set record="~/mail/sent"
+
+# # set mutt to monitor mailboxes below
+# #mailboxes +inbox +Gmail
+# set check_new=yes
+# set timeout=600
+
+fcc-hook [@.].*\\..*$ sent
+
+# ### this is a formatting string, to define the format of your index
+# set index_format="%4C %Z %{%b %d} %-15.15L (%4l) %s"
+
+# # mailboxes to switch
+# #mailboxes Mailbox sent-mail
+
+# # whether to add quota from reply email
+# set header=no
+
+# whether to ask at quit
+set quit=ask-yes
+
+# # html and doc file
+auto_view text/html application/msword
+
+
+# whether to move mail from spool to mbox
+set move=no
+# when mutt display with thread, whether to use ascii to represent tree list
+set ascii_chars=yes
+# whether reply with original content
+set include=yes
+# the symbol before quote
+set indent_str="> "
+# YOUR OWN HEADER
+my_hdr From: tcsyxx6350@gmail.com
+
+
+# # score mails
+# score "~N" +4
+# # score "~s Circulation" +3
+# score "~D" -5
+# score "~O" +1
+# # score "~s believe" -10n
+# set sort rule
+set sort=date
+# # set sort rule when using thread
+# set sort_aux=date
+# # when reaching the end, just stop
+# set pager_stop
+# # set 'r' to quick reply
+# set fast_reply
+
+
+# key "a" to set alias
+set alias_file="~/.mutt.alias"
+source ~/.mutt.alias
+
+
+# # set folder for sent mails
+# set record="~/mail/=sent-mail-`date +%Y-%m`"
+# # set coding for client
+# set charset="utf8"
+# set send_charset="us-ascii:iso-8859-1:gb2312:utf-8"
+
+# set wait_key=yes
+
+# # confirm to append to another mailbox
+# set noconfirmappend
+
+# # set header modifiable?
+# set edit_headers=no
+
+# set pager_index_lines=4
+
+
+# set subscribe
+subscribe ppi-list@googlegroups.com
+
+
+# # set locale
+# set locale="zh_CN"
+# charset-hook ^us-ascii$ gb2312
+# charset-hook ^iso-8859-1$ gb2312
+# charset-hook !utf-8 gb2312
+
+
+# # set mutt's "from" field
+# set envelope_from=yes
+
+#############################################################
+# key mapping
+#############################################################
+macro	index	<f5>	<sync-mailbox><imap-fetch-mail>
+bind	pager	<up>	previous-line
+bind	pager	<down>	next-line
+bind	generic	<left>	previous-entry
+bind	generic <right>	next-entry
