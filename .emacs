@@ -36,7 +36,7 @@
 (eval-after-load "color-theme"
   '(progn
      (color-theme-initialize)
-     (color-theme-xemacs)))
+     (color-theme-deep-blue)))
 
 (require 'cursor-chg)
 (change-cursor-mode t)
