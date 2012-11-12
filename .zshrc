@@ -39,4 +39,14 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 setopt hist_ignore_space
 
 alias ls='ls --color'
-alias ll='ls -lh'
+alias ll='ls -l'
+alias tat='tmux attach-session -t'
+alias emacs='emacs -nw'
+
+function precmd() {
+    case "$TERM" in
+	screen | screen.rxvt | *xterm*)
+	    print -Pn "\ek%-3~\e\\"
+	    ;;
+    esac
+}

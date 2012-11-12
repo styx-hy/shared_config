@@ -1,15 +1,12 @@
-(server-start)
 (tool-bar-mode nil)
 (show-paren-mode t)
 (setq display-time-day-and-date t)
 (setq display-time-24hr-format t)
 (display-time)
 
-;;(menu-bar-mode nil)
-
 (setq default-frame-alist
       '((height . 45) (width . 100)))
-(set-default-font "Inconsolata 11")
+(set-default-font "Inconsolata 13")
 
 (setq backup-by-copyting t
       backup-directory-alist
@@ -30,13 +27,18 @@
 )
 
 
-
 (add-to-list 'load-path "~/.elisp")
 (require 'color-theme)
-(eval-after-load "color-theme"
-  '(progn
-     (color-theme-initialize)
-     (color-theme-deep-blue)))
+(require 'tmtheme)
+(setq tmtheme-directory "~/.elisp/tmthemes")
+(tmtheme-scan)
+(tmtheme-Railscasts)
+;; (eval-after-load "color-theme"
+;;   '(progn
+;;      (color-theme-initialize)
+;;      (color-theme-blackboard)))
+;;(load "~/.elisp/color-theme-molokai.el")
+;;(color-theme-molokai)
 
 (require 'cursor-chg)
 (change-cursor-mode t)
@@ -73,7 +75,18 @@
 ;;                  (not (equal f ".")))
 ;;         (add-to-list 'load-path name)))))
 
-
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-hook 'markdown-mode-hook
+          (function
+           (lambda ()
+             (setq tab-width 4
+		   indent-tabs-mode nil)
+	     )))
+(add-hook 'markdown-mode-hook
+          (function
+           (lambda ()
+	     (local-set-key (kbd "<tab>") 'markdown-insert-pre)
+	     )))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (require 'org-install)
 (setq org-todo-keywords
