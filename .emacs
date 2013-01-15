@@ -1,4 +1,4 @@
-(tool-bar-mode -1)
+(tool-bar-mode nil)
 (show-paren-mode t)
 (setq display-time-day-and-date t)
 (setq display-time-24hr-format t)
@@ -6,7 +6,7 @@
 
 (setq default-frame-alist
       '((height . 45) (width . 100)))
-(set-default-font "Inconsolata Bold 11")
+;; (set-default-font "Inconsolata 11")
 
 (setq backup-by-copyting t
       backup-directory-alist
@@ -25,13 +25,8 @@
    '(2 "_NET_WM_STATE_FULLSCREEN" 0))
 )
 
-(add-to-list 'load-path "~/.elisp")
-;; (require 'color-theme)
-;; (load-file "~/.elisp/color-theme-solarized.el")
-(require 'tmtheme)
-(setq tmtheme-directory "~/.elisp/tmthemes")
-(tmtheme-scan)
-(tmtheme-Railscasts)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(load-theme 'styx-emacs t)
 
 (setq-default cursor-type 'hbar)
 ;;(blink-cursor-mode -1)
@@ -39,7 +34,7 @@
 ;; (change-cursor-mode t)
 ;; (toggle-cursor-type-when-idle t)
 
-(require 'xcscope)
+;; (require 'xcscope)
 
 (global-set-key [f1] 'shell)
 (global-set-key (kbd "C-,") 'beginning-of-buffer)
@@ -71,6 +66,13 @@
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
 (global-linum-mode 1)
+;; seperate line numbers from text
+(setq linum-format
+      (lambda (line)
+	(propertize (format
+		     (let ((w (length (number-to-string
+				       (count-lines (point-min) (point-max)))))) 
+		       (concat "%" (number-to-string w) "d ")) line) 'face 'linum)))
 (column-number-mode 1)
 
 ;; Linux Kernel Coding Style
@@ -102,3 +104,15 @@
 ;;                                        filename))
 ;;                 (setq indent-tabs-mode t)
 ;;                 (c-set-style "linux-tabs-only")))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(linum ((t (:inherit (shadow default) :foreground "color-27")))))
