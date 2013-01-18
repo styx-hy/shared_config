@@ -1,6 +1,72 @@
-((("set" .
-   [1 0 0])
+((("klee_make_symbolic" .
+   [0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0])
+  ("klee" .
+   [1 0 0 0])
+  ("else" .
+   [2 0 0 0])
+  ("argv" .
+   [3 0 0 0])
+  ("STREQ" .
+   [0 0 0 1 0])
+  ("a" .
+   [2])
+  ("argc" .
+   [3 0 0 0])
+  ("f8" .
+   [1 0])
+  ("quote" .
+   [1 0 0 0 0])
+  ("speedbar-show-unknown-files" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0])
+  ("speedbar-show-info-under-mouse" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("custom-set-variables" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0])
+  ("width" .
+   [1 0 0 0 0])
+  ("speedbar-frame-parameters" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0])
+  ("setq" .
+   [6 0 0 0])
+  ("sr-speedbar-toggle" .
+   [0 0 0 0 0 1 0 0 0 0 0 0 0 0 2 1 0 0])
+  ("speedbar-file-lists" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0])
+  ("sr-speedbar-open" .
+   [2 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0])
+  ("window-system" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("when" .
+   [1 0 0 0])
+  ("current" .
+   [8 0 0 0 0 0 0])
+  ("state" .
+   [4 0 0 0 0])
+  ("depth" .
+   [2 0 0 0 1])
+  ("printf" .
+   [3 0 0 0 0 0])
+  ("defun" .
+   [1 0 0 0 0])
   ("d" .
    [1])
-  ("defun" .
-   [1 0 0 0 0])))
+  ("set" .
+   [1 0 0])
+  ("global-set-key" .
+   [1 0 0 0 1 0 0 0 0 0 0 0 0 0])
+  ("kbd" .
+   [1 0 0])
+  ("sr-speedbar-refresh" .
+   [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("sr-speedbar-refresh-turn-on" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0])
+  ("require" .
+   [2 0 0 0 0 0 0])
+  ("sr-speedbar" .
+   [0 0 0 2 0 2 0 0 0 0 0])
+  ("sr-speedbar-width" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("sr-speedbar-width-x" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0])
+  ("sr-speedbar-right-side" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0])))
