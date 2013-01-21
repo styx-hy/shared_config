@@ -38,10 +38,21 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 setopt hist_ignore_space
 
+case "$TERM" in
+    'xterm') TERM=xterm-256color;;
+    'screen') XTERM=screen-256color;;
+    'Eterm') TERM=Eterm-256color;;
+esac
+export TERM
+
+#source "/home/styx/.zshrc.d/base16-eighties.dark.sh"
+
 alias ls='ls --color'
 alias ll='ls -l'
 alias tat='tmux attach-session -t'
 alias emacs='emacs -nw'
+alias b='cd $OLDPWD'
+alias e="emacs -nw"
 
 function precmd() {
     case "$TERM" in
@@ -50,3 +61,8 @@ function precmd() {
 	    ;;
     esac
 }
+
+export KLEEBASE=/home/styx/klee-build/klee
+export LLVMSRC=/home/styx/klee-build/llvm
+export LLVMOBJ=/home/styx/klee-build/llvm-build
+export PATH=$KLEEBASE/Release+Asserts/bin:$LLVMOBJ/Release+Asserts/bin:$PATH
