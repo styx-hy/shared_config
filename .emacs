@@ -27,6 +27,9 @@
 ;; ido-mode
 (require 'ido)
 (ido-mode t)
+(setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))) ; Display ido results vertically, rather than horizontally
+(defun ido-disable-line-truncation () (set (make-local-variable 'truncate-lines) nil))
+(add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
 
 ;; speedbar
 (when window-system
@@ -67,8 +70,16 @@
 ;; xcscope
 (require 'xcscope)
 
+;; eshell
+(setq eshell-cmpl-ignore-case t)
+(add-hook 'eshell-mode-hook
+	  (lambda ()
+	    (define-key eshell-mode-map (kbd "C-g") 'delete-window)))
+
+
 ;; Key bindings
-(global-set-key [f1] 'shell)
+;; (global-set-key [f1] 'term) ;; instead of shell
+(global-set-key [f1] 'eshell)
 (global-set-key (kbd "C-,") 'beginning-of-buffer)
 (global-set-key (kbd "C-.") 'end-of-buffer)
 (global-set-key [f5] 'revert-buffer)
