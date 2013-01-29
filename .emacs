@@ -24,6 +24,10 @@
 
 ;;(load-theme 'base16-railscasts t)
 
+;; hl-line-mode
+(require 'hl-line)
+(global-hl-line-mode t)
+
 ;; ido-mode
 (require 'ido)
 (ido-mode t)
