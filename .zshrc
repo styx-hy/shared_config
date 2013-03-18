@@ -1,8 +1,9 @@
 # Set up the prompt
 
-autoload -Uz promptinit
-promptinit
-prompt adam1
+#autoload -Uz promptinit
+#promptinit
+#prompt adam1
+export PROMPT='%F{red}%n@%m%k %B%F{cyan}%(4~|...|)%3~%F{white} %# %b%f%k'
 
 setopt histignorealldups sharehistory
 
@@ -23,7 +24,7 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
+#eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
@@ -38,31 +39,31 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 setopt hist_ignore_space
 
-case "$TERM" in
-    'xterm') TERM=xterm-256color;;
-    'screen') XTERM=screen-256color;;
-    'Eterm') TERM=Eterm-256color;;
-esac
-export TERM
+#case "$TERM" in
+#    'xterm') TERM=xterm-256color;;
+#    'screen') XTERM=screen-256color;;
+#    'Eterm') TERM=Eterm-256color;;
+#esac
+#export TERM
 
-#source "/home/styx/.zshrc.d/base16-eighties.dark.sh"
-
-alias ls='ls --color'
+alias ls='ls -G'
 alias ll='ls -l'
 alias tat='tmux attach-session -t'
-alias emacs='emacs -nw'
+alias emacs='emacs-24.2 -nw'
 alias b='cd $OLDPWD'
-alias e="emacs -nw"
+alias e="emacs-24.2 -nw"
 
-function precmd() {
-    case "$TERM" in
-	screen | screen.rxvt | *xterm*)
-	    print -Pn "\ek%-3~\e\\"
-	    ;;
-    esac
-}
+# function precmd() {
+#     case "$TERM" in
+# 	screen | screen.rxvt | *xterm*)
+# 	    print -Pn "\ek%-3~\e\\"
+# 	    ;;
+#     esac
+# }
 
-export KLEEBASE=/home/styx/klee-build/klee
-export LLVMSRC=/home/styx/klee-build/llvm
-export LLVMOBJ=/home/styx/klee-build/llvm-build
-export PATH=$KLEEBASE/Release+Asserts/bin:$LLVMOBJ/Release+Asserts/bin:$PATH
+#export KLEEBASE=/home/styx/klee-build/klee
+#export LLVMSRC=/home/styx/klee-build/llvm
+#export LLVMOBJ=/home/styx/klee-build/llvm-build
+#export PATH=$KLEEBASE/Release+Asserts/bin:$LLVMOBJ/Release+Asserts/bin:$PATH
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
