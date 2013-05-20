@@ -3,7 +3,8 @@
 #autoload -Uz promptinit
 #promptinit
 #prompt adam1
-export PROMPT='%F{red}%n@%m%k %B%F{cyan}%(4~|...|)%3~%F{white} %# %b%f%k'
+autoload -U colors && colors
+PROMPT="%{$fg_bold[red]%}%n%{$fg_bold[black]%} at %{$fg_bold[green]%}%m%k %B%{$fg_no_bold[yellow]%}%(4~|...|)%3~%{$fg_bold[black]%} %# %b%f%k"
 
 setopt histignorealldups sharehistory
 
@@ -39,19 +40,24 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 setopt hist_ignore_space
 
-#case "$TERM" in
-#    'xterm') TERM=xterm-256color;;
-#    'screen') XTERM=screen-256color;;
-#    'Eterm') TERM=Eterm-256color;;
-#esac
-#export TERM
+if [[ -n $STY || -n $TMUX ]]; then
+    function title() { print -Pn "\ek$1\e\\"}
+    function precmd() { title "%20<..<%~%<<" }
+    function preexec() { title "%20>..>$1%<<" }
+#     export PS1="%{${fg[cyan]}%}[%D{%H:%M} %20<..<%~%<<]%{$reset_color%} "
+# else
+#     export PS1="%{${fg[cyan]}%}[%D{%H:%M} %n@%m:%20<..<%~%<<]%{$reset_color%} "
+fi
 
-alias ls='ls -G'
+if [[ `uname` == 'Linux' ]]; then
+    alias ls='ls --color'
+else
+    alias ls='ls -G'
+fi
 alias ll='ls -l'
 alias tat='tmux attach-session -t'
-alias emacs='emacs-24.2 -nw'
 alias b='cd $OLDPWD'
-alias e="emacs-24.2 -nw"
+alias e="emacsclient"
 
 # function precmd() {
 #     case "$TERM" in
@@ -66,4 +72,18 @@ alias e="emacs-24.2 -nw"
 #export LLVMOBJ=/home/styx/klee-build/llvm-build
 #export PATH=$KLEEBASE/Release+Asserts/bin:$LLVMOBJ/Release+Asserts/bin:$PATH
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+# set up fasd
+if hash fasd 2>/dev/null; then
+    eval "$(fasd --init auto)"
+fi
+
+# set up rbenv
+if hash rbenv 2>/dev/null; then
+    eval "$(rbenv init -)"
+fi
+
+# set up perlbrew
+if [[ -d "$HOME/.pb" ]]; then
+    export PERLBREW_ROOT=~/.pb
+    source ~/.pb/etc/bashrc
+fi
