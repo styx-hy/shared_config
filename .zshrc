@@ -59,14 +59,6 @@ alias tat='tmux attach-session -t'
 alias b='cd $OLDPWD'
 alias e="emacsclient"
 
-# function precmd() {
-#     case "$TERM" in
-# 	screen | screen.rxvt | *xterm*)
-# 	    print -Pn "\ek%-3~\e\\"
-# 	    ;;
-#     esac
-# }
-
 #export KLEEBASE=/home/styx/klee-build/klee
 #export LLVMSRC=/home/styx/klee-build/llvm
 #export LLVMOBJ=/home/styx/klee-build/llvm-build

@@ -1,0 +1,128 @@
+exit
+ls
+ag softmmu_tempalte.h
+ag softmmu_template.h
+clear
+cd /git@hongy-pc:
+ls
+ls
+cd gitlab-shell/
+ls
+exit
+cd zion/
+ls
+cd to_qemu/
+ls
+git co
+git ci
+ls
+rm #	
+rm \*git-status\* 
+ll
+ls
+exit
+cd /styx@hongy-pc:
+cd
+cd /styx@hongy-pc:
+cd cs-qemu/cm-qemu/
+l
+ls
+clear
+grep -r "softmmu_tempaltes.h"
+grep -r "softmmu_tempalte.h"
+grep -r "softmmu_template.h" .
+ag sno_holder
+ag
+ag
+grep -rI "sno_holder" .
+rm tcg-target.c.orig
+cd ../../..
+cd ../zion/linux-2.6.32.60/
+ls
+grep -rI "kernel_execve" .
+grep -rI "sys_execve" .
+grep -rI "kernel_execve" .
+grep -rI "do_execve" .
+grpe -rI "search_binary_handler" .
+grep -rI "search_binary_handler" .
+grep -rI "load_library" .
+grep -rI "load_binary" .
+grep -rI "load_elf_binary" .
+grep -rI "start_thread" .
+grep -rI "sys_execve" .
+grep -rI "kernel_execve" .
+cd ..
+ag gen_helper_enter_mmx
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+gcc -O0 -g -Wall demo6.c -o demo6
+objdump -d demo6
+gcc -O1 -g -Wall demo6.c -o demo6
+objdump -d demo6
+gcc -O1 -g -Wall demo6.c -o demo6
+ag tcg_qemu_tb_exec
+ag TO_CNT
+cd
+ls
+chmod +x test.pl 
+./test.pl 
+./test.pl 
+./test.pl 
+./test.pl 
+cd
+pwd
+ls
+pkill cow
+pgrep cow
+pkill cow
+pgrep cow
+pgrep cow
+pgrep cow
+pgrep cow
+pkill cow
+pgrep cow
+pkill cow
+pgrep cow
+pkill cow
+pgrep cow
+pkill cow
+pgrep cow
+pkill cow
+pgrep cow
+pgrep cow
+pgrep cow
+pkill cow
+pkill cow
+pkill cow
+pgrep cow
+z
+s
+cd /styx@hongy-pc:
+cd zion/
+ls
+cd redis-2.6.13/
+cd src/
+ag arMain
+ag aeMain
+gcc -g -Wall quicksort.c -o quicksort
+gcc -g -Wall quicksort.c -o quicksort
+gcc -g -Wall quicksort.c -o quicksort
+./quicksort 
+ls
+./quicksort 
