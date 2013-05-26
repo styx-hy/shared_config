@@ -57,7 +57,7 @@ fi
 alias ll='ls -l'
 alias tat='tmux attach-session -t'
 alias b='cd $OLDPWD'
-alias e="emacsclient"
+alias e="emacsclient -n"
 
 #export KLEEBASE=/home/styx/klee-build/klee
 #export LLVMSRC=/home/styx/klee-build/llvm
