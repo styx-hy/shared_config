@@ -434,6 +434,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (defalias 'perl-mode 'cperl-mode)
 
 (when window-system
+  ;; (setq server-host "styx-mbp")
+  ;; (setq server-use-tcp t)
   (server-start))
 ;; (add-hook 'c-mode-common-hook
 ;;           (lambda ()
