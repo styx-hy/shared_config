@@ -1,4 +1,3 @@
-~/zion/jos/JOS_MIT
 ~/Library/LaunchAgents
 /usr/local/bin
 /scpc:styx@hongy-pc.:/home/styx/cs-qemu/cm-qemu/hw
@@ -31,3 +30,4 @@
 /scpc:styx@hongy-pc:/home/styx/zion/redis-2.6.13
 /scpc:styx@hongy-pc:/home/styx/zion/redis-2.6.13/src
 /scpc:styx@hongy-pc:/home/styx/zion/demo
+/Users/styx/zion/projects/ssearcher/src

@@ -49,8 +49,8 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; git.el - official git package
-;; (add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
-;; (require 'git)
+(add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
+(require 'git)
 
 ;; ;; bookmark+
 ;; (add-to-list 'load-path "~/.emacs.d/elpa/bookmark+-20130317.1522")
@@ -237,30 +237,41 @@ instead."
 (load-theme 'monokai t)
 
 ;; yasnippet
-;; (require 'yasnippet)
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
+(require 'yasnippet)
+
+(define-key yas-minor-mode-map (kbd "C-c ; u") 'yas/expand)
+(defadvice yas/insert-snippet (around use-completing-prompt activate)
+  "Use `yas/completing-prompt' for `yas/prompt-functions' but only here..."
+  (let ((yas/prompt-functions '(yas/completing-prompt)))
+    ad-do-it))
+(add-hook 'c-mode-hook
+	  '(lambda ()
+	     (yas-minor-mode)))
 ;; (yas-global-mode 1)
-;; (defun yas-ido-expand ()
-;;   "Lets you select (and expand) a yasnippet key"
-;;   (interactive)
-;;     (let ((original-point (point)))
-;;       (while (and
-;;               (not (= (point) (point-min) ))
-;;               (not
-;;                (string-match "[[:space:]\n]" (char-to-string (char-before)))))
-;;         (backward-word 1))
-;;     (let* ((init-word (point))
-;;            (word (buffer-substring init-word original-point))
-;;            (list (yas-active-keys)))
-;;       (goto-char original-point)
-;;       (let ((key (remove-if-not
-;;                   (lambda (s) (string-match (concat "^" word) s)) list)))
-;;         (if (= (length key) 1)
-;;             (setq key (pop key))
-;;           (setq key (ido-completing-read "key: " list nil nil word)))
-;;         (delete-char (- init-word original-point))
-;;         (insert key)
-;;         (yas-expand)))))
-;; (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-ido-expand)
+(defun yas-ido-expand ()
+  "Lets you select (and expand) a yasnippet key"
+  (interactive)
+    (let ((original-point (point)))
+      (while (and
+              (not (= (point) (point-min) ))
+              (not
+               (string-match "[[:space:]\n]" (char-to-string (char-before)))))
+        (backward-word 1))
+    (let* ((init-word (point))
+           (word (buffer-substring init-word original-point))
+           (list (yas-active-keys)))
+      (goto-char original-point)
+      (let ((key (remove-if-not
+                  (lambda (s) (string-match (concat "^" word) s)) list)))
+        (if (= (length key) 1)
+            (setq key (pop key))
+          (setq key (ido-completing-read "key: " list nil nil word)))
+        (delete-char (- init-word original-point))
+        (insert key)
+        (yas-expand)))))
+(define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-ido-expand)
+(yas-reload-all)
 
 
 ;; (add-to-list 'load-path "~/.emacs.d/tomorrow-theme/GNU Emacs")
@@ -299,9 +310,17 @@ instead."
 
 ;; auto-complete
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
+(add-to-list 'load-path "~/.emacs.d/auto-complete/lib/popup")
+(add-to-list 'load-path "~/.emacs.d/auto-complete/lib/fuzzy")
 (require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/ac-dict")
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
 (ac-config-default)
+(setq-default ac-sources '(
+                           ac-source-yasnippet
+                           ac-source-abbrev
+                           ac-source-dictionary
+                           ac-source-words-in-same-mode-buffers
+                           ))
 
 ;; cursor-mode
 ;; (setq-default cursor-type 'hbar)
@@ -420,6 +439,13 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+
+;; (add-hook 'c-mode-hook
+;; 	  '(lambda()
+;; 	     (c-set-style "k&r")
+;; 	     (setq c-basic-offset 4)
+;; 	     (setq indent-tabs-mode nil)))
+
 ;; Linux Kernel Coding Style
 ;; (defun c-lineup-arglist-tabs-only (ignored)
 ;;   "Line up argument lists by tabs, not spaces"

@@ -1,4 +1,3 @@
-exit
 ls
 ag softmmu_tempalte.h
 ag softmmu_template.h
@@ -126,3 +125,4 @@ gcc -g -Wall quicksort.c -o quicksort
 ./quicksort 
 ls
 ./quicksort 
+exit

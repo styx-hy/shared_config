@@ -1,4 +1,4 @@
-;; -*- emacs-lisp -*- <13/05/16 01:40:14 /Users/styx/.emacs.d/tramp>
+;; -*- emacs-lisp -*- <13/05/29 12:31:51 /Users/styx/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
@@ -120,4 +120,5 @@
   ("id" "/usr/bin/id")
   ("gid-integer" 1000)
   ("uid-integer" 1000)
-  ("ls" "/bin/ls --color=never")))
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)))
