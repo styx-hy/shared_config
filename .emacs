@@ -1,14 +1,17 @@
-;; General settings
+;;; * General settings
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
-(setq tool-bar-mode nil)
-;; (menu-bar-mode -1)
-(show-paren-mode t)
+(tool-bar-mode -1)
+(display-time-mode t)
+(when (not window-system)
+  (menu-bar-mode -1))
 (setq display-time-day-and-date t)
 (setq display-time-24hr-format t)
-(display-time)
+(show-paren-mode t)
+(blink-cursor-mode -1)
 
-;; smooth scrolling
+;;; * Packages
+;;; ** smooth scrolling
 (setq scroll-margin 10)
 (setq scroll-step 1)
 
@@ -22,7 +25,7 @@
 (add-to-list 'default-frame-alist
 	     '(font . "Inconsolata-14"))
 (add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+
 (setq backup-by-copyting t
       backup-directory-alist
       '(("." . "~/.saves"))
@@ -31,24 +34,23 @@
       kept-old-versions 2
       version-control t)
 
+;;; ** perl
+
 ;; append perlbrew path to environment variable
 (setenv "PATH"
 	(concat "~/.pb/perls/perl-5.16-thread/bin:"
 		(getenv "PATH")))
 (setq exec-path (split-string (getenv "PATH") ":"))
 
-;; elpa settings
-;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+;;; ** ELPA
+
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("marmalade" . "http://marmalade-repo.org/packages/")
-			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+			 ("melpa" . "http://melpa.milkbox.net/packages/")
+			 ("org" . "http://orgmode.org/elpa/")))
 
-(add-to-list 'load-path "~/.emacs.d/elpa/")
-(let ((default-directory "~/.emacs.d/elpa/"))
-  (normal-top-level-add-subdirs-to-load-path))
+;;; ** Git
 
-;; git.el - official git package
 (add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
 (require 'git)
 
@@ -56,7 +58,8 @@
 ;; (add-to-list 'load-path "~/.emacs.d/elpa/bookmark+-20130317.1522")
 ;; (require 'bookmark+)
 
-;; VIM-like powerline
+;;; ** powerline
+
 (add-to-list 'load-path "~/.emacs.d/powerline")
 (require 'powerline)
 (when window-system
@@ -65,11 +68,12 @@
   (powerline-default-theme))
 
 ;; hl-line-mode
-(require 'hl-line)
-(when window-system
-  (global-hl-line-mode t))
+;; (require 'hl-line)
+;; (when window-system
+;;   (global-hl-line-mode t))
 
-;; ido-mode
+;;; ** ido
+
 (require 'ido)
 (ido-mode t)
 (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))) ; Display ido results vertically, rather than horizontally
@@ -207,7 +211,8 @@ instead."
 (global-set-key (kbd "M-n") 'smart-symbol-go-forward)
 (global-set-key (kbd "M-p") 'smart-symbol-go-backward)
 
-;; speedbar
+;;; ** speedbar
+
 ;; (when window-system
 ;;   (require 'sr-speedbar))
 ;; (setq speedbar-show-unknown-files t)
@@ -226,17 +231,8 @@ instead."
 ;; 				  (left-fringe . 0))))
 ;; (sr-speedbar-open);
 
-;; tmtheme & themes
-;; (require 'tmtheme)
-;; (setq tmtheme-directory "~/.emacs.d/tmthemes")
-;; (tmtheme-scan)
-;; (when window-system
-;;   (tmtheme-Monokai))
+;;; ** yasnippet
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/monokai-theme-0.0.10")
-(load-theme 'monokai t)
-
-;; yasnippet
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 (require 'yasnippet)
 
@@ -274,16 +270,6 @@ instead."
 (yas-reload-all)
 
 
-;; (add-to-list 'load-path "~/.emacs.d/tomorrow-theme/GNU Emacs")
-;; (add-to-list 'custom-theme-load-path "~/.emacs.d/tomorrow-theme/GNU Emacs/")
-;; (require 'color-theme-tomorrow)
-;; (load-theme 'tomorrow- t)
-
-;; (when window-system
-;;   (require 'solarized)
-;;   (load-theme 'solarized-dark t))
-
-
 ;; (font-lock-add-keywords 'c-mode '(("\\(\\w+\\)\\s-*\(" . font-lock-function-name-face)))
 ;; (font-lock-add-keywords 'c-mode '(("if" . font-lock-keyword-face)))
 ;; (font-lock-add-keywords 'c-mode '(("for" . font-lock-keyword-face)))
@@ -308,7 +294,8 @@ instead."
 ;; (zjl-hl-enable-global 'emacs-lisp-mode);; (zjl-hl-disable-global 'emacs-lisp-mode)
 
 
-;; auto-complete
+;;; ** auto-complete
+
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/auto-complete/lib/popup")
 (add-to-list 'load-path "~/.emacs.d/auto-complete/lib/fuzzy")
@@ -322,14 +309,14 @@ instead."
                            ac-source-words-in-same-mode-buffers
                            ))
 
-;; cursor-mode
+;;; cursor
 ;; (setq-default cursor-type 'hbar)
-(blink-cursor-mode -1)
 ;; (require 'cursor-chg)
 ;; (change-cursor-mode t)
 ;; (toggle-cursor-type-when-idle t)
 
-;; xcscope
+;;; ** xcscope
+
 (add-to-list 'load-path "~/.emacs.d/xcscope")
 (require 'xcscope)
 
@@ -373,7 +360,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (global-set-key (kbd "M-`") 'jump-to-mark)
 
 
-;; markdown-mode
+;;; ** markdown-mode
+
 (add-to-list 'load-path "~/.emacs.d/markdown-mode")
 (require 'markdown-mode)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -389,16 +377,23 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 	     (local-set-key (kbd "<tab>") 'markdown-insert-pre)
 	     )))
 
+
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(require 'org-install)
+
+;;; ** org
+
 (setq org-todo-keywords
        '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
 (defun org-summary-todo (n-done n-not-done)
        "Switch entry to DONE when all subentries are done, to TODO otherwise."
        (let (org-log-done org-log-states)   ; turn off logging
          (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+;; organize structure of .emacs configuraton
+(add-hook 'emacs-lisp-mode-hook 'turn-on-orgstruct)
+(setq orgstruct-heading-prefix-regexp "^;;; *")
+
 
 ;; linum-mode
 (global-linum-mode 1)
@@ -411,7 +406,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 		       (concat " %" (number-to-string w) "d ")) line) 'face 'linum)))
 (column-number-mode 1)
 
-;; slime-mode
+;;; ** slime
+
 ;; (setq inferior-lisp-program "/opt/sbcl/bin/sbcl") ; your Lisp system
 ;; (require 'slime)
 ;; (slime-setup)
@@ -424,6 +420,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (setq scheme-program-name "/usr/local/bin/scheme --emacs")
 
 ;; (require 'gambit)
+
+;;; ** zencoding
 
 (add-to-list 'load-path "~/.emacs.d/zencoding")
 (require 'zencoding-mode)
@@ -456,7 +454,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ;;     (* (max steps 1)
 ;;        c-basic-offset)))
 
-;; cperl-mode
+;;; ** cperl-mode
+
 (defalias 'perl-mode 'cperl-mode)
 
 (when window-system
@@ -494,6 +493,20 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
  '(ido-max-window-height 15)
- '(split-height-threshold 120)
- '(tool-bar-mode nil))
+ '(split-height-threshold 120))
+
+;;; * Themes
+(package-initialize)
+(if window-system
+    (load-theme 'monokai t)
+  (load-theme 'cyberpunk t))
+
+;; TextMate theme port
+;; (require 'tmtheme)
+;; (setq tmtheme-directory "~/.emacs.d/tmthemes")
+;; (tmtheme-scan)
+;; (when window-system
+;;   (tmtheme-Monokai))
+
