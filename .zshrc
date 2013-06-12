@@ -63,6 +63,9 @@ alias e="emacsclient -n"
 #export LLVMSRC=/home/styx/klee-build/llvm
 #export LLVMOBJ=/home/styx/klee-build/llvm-build
 #export PATH=$KLEEBASE/Release+Asserts/bin:$LLVMOBJ/Release+Asserts/bin:$PATH
+if [[ -d "/usr/texbin" ]]; then
+    export PATH="/usr/texbin":$PATH
+fi
 
 # set up fasd
 if hash fasd 2>/dev/null; then
@@ -70,6 +73,9 @@ if hash fasd 2>/dev/null; then
 fi
 
 # set up rbenv
+if [[ -d "$HOME/.rbenv" ]]; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+fi
 if hash rbenv 2>/dev/null; then
     eval "$(rbenv init -)"
 fi
