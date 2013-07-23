@@ -1,0 +1,7 @@
+# name: Image
+# contributor: Yang Hong <hy.styx@gmail.com>
+# key: iimg
+# --
+#+caption: ${1:caption for the image}
+#+name: ${2:image name}
+[[$0]]

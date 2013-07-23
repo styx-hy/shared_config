@@ -1,0 +1,7 @@
+# name: Code block
+# contributor: Yang Hong <hy.styx@gmail.com>
+# key: isrc
+# --
+#+begin_src ${1:lang}
+$0
+#+end_src

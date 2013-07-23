@@ -1,0 +1,6 @@
+# name: #ifdef {...} #endif
+# key: id
+# --
+#ifdef $1
+$0
+#endif
