@@ -1,7 +1,9 @@
 ;;; * General settings
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
-(tool-bar-mode -1)
+(when window-system
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1))
 (display-time-mode t)
 (when (not window-system)
   (menu-bar-mode -1))
@@ -9,23 +11,33 @@
 (setq display-time-24hr-format t)
 (show-paren-mode t)
 (blink-cursor-mode -1)
+(add-to-list 'load-path "~/.emacs.d")
 
-;;; * Packages
-;;; ** smooth scrolling
+;; emacs -nw:  emacs in terminal
+;; map RET to [return] in terminal mode, fix `ret` in cscope jumping
+(let ((map (if (boundp 'input-decode-map)
+	       input-decode-map function-key-map)))
+  (define-key map (kbd "RET") [return]))
+
+;;; * Miscellaneous
+
+;; metrics
+(setq initial-frame-alist
+      `((height . 60)
+	(width . 150)))
+
+;; scrolling
 (setq scroll-margin 10)
 (setq scroll-step 1)
 
-(setq read-file-name-completion-ignore-case t) ; Set find-file to be case insensitive
+;; Set find-file to be case insensitive
+(setq read-file-name-completion-ignore-case t)
 
-(setq initial-frame-alist
-      `((height . 60)
-	(width . 150)
-	(top . 50)
-	(left . 400)))
+;; font
 (add-to-list 'default-frame-alist
 	     '(font . "Inconsolata-14"))
-(add-to-list 'load-path "~/.emacs.d")
 
+;; backup
 (setq backup-by-copyting t
       backup-directory-alist
       '(("." . "~/.saves"))
@@ -34,12 +46,37 @@
       kept-old-versions 2
       version-control t)
 
+;; whole line or region
+(defun my-kill-ring-save (beg end flash)
+  (interactive (if (use-region-p)
+		   (list (region-beginning) (region-end) nil)
+		 (list (line-beginning-position)
+		       (line-beginning-position 2) 'flash)))
+  (kill-ring-save beg end)
+  (when flash
+    (save-excursion
+      (if (equal (current-column) 0)
+	  (goto-char end)
+	(goto-char beg))
+      (sit-for blink-matching-delay))))
+(global-set-key [remap kill-ring-save] 'my-kill-ring-save)
+
+(put 'kill-region 'interactive-form      
+     '(interactive
+       (if (use-region-p)
+           (list (region-beginning) (region-end))
+         (list (line-beginning-position) (line-beginning-position 2)))))
+
+
+;;; * Packages
+
 ;;; ** perl
 
 ;; append perlbrew path to environment variable
 (setenv "PATH"
-	(concat "~/.pb/perls/perl-5.16-thread/bin:"
+	(concat "~/.pb/perls/perl-5.16-thread/bin:~/zion/go/bin:~/zion/letsgo/bin:/usr/local/bin:" 
 		(getenv "PATH")))
+(setenv "PATH" (concat "~/zion/racket/racket/bin:" (getenv "PATH")))
 (setq exec-path (split-string (getenv "PATH") ":"))
 
 ;;; ** ELPA
@@ -53,19 +90,77 @@
 
 (add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
 (require 'git)
+(global-set-key (kbd "C-c i") 'magit-status) ; 'i' for info (of git repo)
 
 ;; ;; bookmark+
 ;; (add-to-list 'load-path "~/.emacs.d/elpa/bookmark+-20130317.1522")
 ;; (require 'bookmark+)
 
+
+;;; ** gnus Gmail
+
+;; (require 'gnus)
+;; (setq gnus-select-method '(nnimap "gmail"
+;; 				  (nnimap-address "imap.gmail.com")   ; it could also be imap.googlemail.com if that's your server.
+;; 				  (nnimap-server-port 993)
+;; 				  (nnimap-stream ssl)))
+
+;;; ** gocode
+
+;; (eval-after-load "auto-complete-config"
+;;   '(progn
+;;      (require 'go-autocomplete)
+;; ))
+;; (require 'auto-complete-config)
+
+(eval-after-load "company-mode"
+  '(progn
+     (require 'company)                                   ; load company mode
+     (require 'company-go)                                ; load company mode go backend
+     (require 'company-clang)
+     ))
+(setq company-tooltip-limit 20)                      ; bigger popup window
+(setq company-minimum-prefix-length 0)               ; autocomplete right after '.'
+(setq company-idle-delay .3)                         ; shorter delay before autocompletion popup
+(setq company-echo-delay 0)                          ; removes annoying blinking
+(setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+(add-hook 'go-mode-hook (lambda ()
+			  (set (make-local-variable 'company-backends) '(company-go))
+			  (company-mode)))
+
+(add-hook 'c-mode-hook (lambda ()
+			 (company-mode)
+			 ))
+(setq geiser-company--completions t)
+
+(custom-set-faces
+ '(company-preview
+   ((t (:foreground "darkgray" :underline t))))
+ '(company-preview-common
+   ((t (:inherit company-preview))))
+ '(company-tooltip
+   ((t (:background "lightgray" :foreground "black"))))
+ '(company-tooltip-selection
+   ((t (:background "steelblue" :foreground "white"))))
+ '(company-tooltip-common
+   ((((type x)) (:inherit company-tooltip :weight bold))
+    (t (:inherit company-tooltip))))
+ '(company-tooltip-common-selection
+   ((((type x)) (:inherit company-tooltip-selection :weight bold))
+    (t (:inherit company-tooltip-selection)))))
+
 ;;; ** powerline
 
-(add-to-list 'load-path "~/.emacs.d/powerline")
-(require 'powerline)
-(when window-system
-  (set-face-attribute 'mode-line nil
-  		      :background "OliveDrab3")
-  (powerline-default-theme))
+;; (add-to-list 'load-path "~/.emacs.d/powerline")
+;; (add-hook 'after-init-hook (lambda ()
+;; 			     (progn
+;; 			       (require 'powerline)
+;; 			       (when window-system
+;; 				 (set-face-attribute 'mode-line nil
+;; 				 		     ;; :background "OliveDrab3"
+;; 				 		     :foreground "black")
+;; 				 (powerline-default-theme))
+;; 				)))
 
 ;; hl-line-mode
 ;; (require 'hl-line)
@@ -244,6 +339,9 @@ instead."
 (add-hook 'c-mode-hook
 	  '(lambda ()
 	     (yas-minor-mode)))
+(add-hook 'org-mode-hook
+	  '(lambda ()
+	     (yas-minor-mode)))
 ;; (yas-global-mode 1)
 (defun yas-ido-expand ()
   "Lets you select (and expand) a yasnippet key"
@@ -269,6 +367,7 @@ instead."
 (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-ido-expand)
 (yas-reload-all)
 
+(add-to-list 'yas-snippet-dirs "~/.emacs.d/yas-go")
 
 ;; (font-lock-add-keywords 'c-mode '(("\\(\\w+\\)\\s-*\(" . font-lock-function-name-face)))
 ;; (font-lock-add-keywords 'c-mode '(("if" . font-lock-keyword-face)))
@@ -296,18 +395,33 @@ instead."
 
 ;;; ** auto-complete
 
-(add-to-list 'load-path "~/.emacs.d/auto-complete")
-(add-to-list 'load-path "~/.emacs.d/auto-complete/lib/popup")
-(add-to-list 'load-path "~/.emacs.d/auto-complete/lib/fuzzy")
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
-(ac-config-default)
-(setq-default ac-sources '(
-                           ac-source-yasnippet
-                           ac-source-abbrev
-                           ac-source-dictionary
-                           ac-source-words-in-same-mode-buffers
-                           ))
+;; (add-hook 'after-init-hook (lambda ()
+;; 			     (require 'auto-complete-config)
+;; 			     (add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
+;; 			     (ac-config-default)
+;; 			     (setq-default ac-sources '(
+;; 							ac-source-yasnippet
+;; 							ac-source-abbrev
+;; 							ac-source-dictionary
+;; 							ac-source-words-in-same-mode-buffers
+;; 							))
+;; ))
+
+;; (add-hook 'after-init-hook (lambda ()
+;; 			     (progn
+;; 			       (defun ac-cc-mode-setup ()
+;; 				 (setq ac-clang-complete-executable "~/.emacs.d/emacs-clang-complete-async/clang-complete")
+;; 				 (setq ac-sources '(ac-source-clang-async))
+;; 				 (ac-clang-launch-completion-process)
+;; 				 )
+
+;; 			       (defun my-ac-config ()
+;; 				 (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+;; 				 (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+;; 				 )
+
+;; 			       (my-ac-config)
+;; )))
 
 ;;; cursor
 ;; (setq-default cursor-type 'hbar)
@@ -395,7 +509,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (setq orgstruct-heading-prefix-regexp "^;;; *")
 
 
-;; linum-mode
+;;; ** linum-mode
 (global-linum-mode 1)
 ;; seperate line numbers from text
 (setq linum-format
@@ -406,7 +520,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 		       (concat " %" (number-to-string w) "d ")) line) 'face 'linum)))
 (column-number-mode 1)
 
-;;; ** slime
+;;; ** slime & scheme
 
 ;; (setq inferior-lisp-program "/opt/sbcl/bin/sbcl") ; your Lisp system
 ;; (require 'slime)
@@ -417,7 +531,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ;; (autoload 'gambit-mode "gambit" "Hook Gambit mode into scheme.")
 ;; (add-hook 'inferior-scheme-mode-hook (function gambit-inferior-mode))
 ;; (add-hook 'scheme-mode-hook (function gambit-mode))
-(setq scheme-program-name "/usr/local/bin/scheme --emacs")
+(setq scheme-program-name "/usr/local/bin/scheme")
+(require 'xscheme)
+(setq geiser-active-implementations '(racket))
 
 ;; (require 'gambit)
 
@@ -427,16 +543,41 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (require 'zencoding-mode)
 (add-hook 'sgml-mode-hook 'zencoding-mode)
 
-;; emacs -nw:  emacs in terminal
-;; map RET to [return] in terminal mode, fix `ret` in cscope jumping
-(let ((map (if (boundp 'input-decode-map)
-	       input-decode-map function-key-map)))
-  (define-key map (kbd "RET") [return]))
-
+;;; ** c-mode and c-common-mode
 
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-common-hook 'google-make-newline-indent)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (let ((filename (buffer-file-name)))
+              ;; Enable kernel mode for the appropriate files
+              (when (and filename
+                         (string-match "drreplay"
+				       (expand-file-name filename)))
+		(setq comment-start "//"
+		      comment-end   "")
+		(defun google-c-lineup-expression-plus-8 (langelem)
+		  (save-excursion
+		    (back-to-indentation)
+		    ;; Go to beginning of *previous* line:
+		    (c-backward-syntactic-ws)
+		    (back-to-indentation)
+		    ;; We are making a reasonable assumption that if there is a control
+		    ;; structure to indent past, it has to be at the beginning of the line.
+		    (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
+			(goto-char (match-end 1)))
+		    (vector (+ 8 (current-column)))))
+		(c-set-offset 'arglist-intro
+			      'google-c-lineup-expression-plus-8)
+		(c-set-offset 'arglist-cont-nonempty
+			      '(c-lineup-gcc-asm-reg (c-lineup-argcont 8)))))))
+;; highlight fixme
+;; (add-hook 'c-mode-common-hook
+;;                (lambda ()
+;;                 (font-lock-add-keywords nil
+;;                  '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))))
+
+;; (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
 ;; (add-hook 'c-mode-hook
 ;; 	  '(lambda()
@@ -458,10 +599,27 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 (defalias 'perl-mode 'cperl-mode)
 
+;;; ** daemon settings
+
 (when window-system
   ;; (setq server-host "styx-mbp")
   ;; (setq server-use-tcp t)
-  (server-start))
+  (unless
+      (and (boundp 'server-process)
+	   (memq (process-status server-process) '(connect listen open run)))
+    (server-start)))
+
+(add-hook 'server-switch-hook
+        (lambda ()
+          (when (current-local-map)
+            (use-local-map (copy-keymap (current-local-map))))
+            (when server-buffer-clients
+              (local-set-key (kbd "C-x j") 'server-edit))))
+
+;; test existence and state of server
+;; (and (boundp 'server-process)
+;;      (memq (process-status server-process) '(connect listen open run)))
+
 ;; (add-hook 'c-mode-common-hook
 ;;           (lambda ()
 ;;             ;; Add kernel style
@@ -497,16 +655,68 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(ido-max-window-height 15)
  '(split-height-threshold 120))
 
+
 ;;; * Themes
 (package-initialize)
-(if window-system
-    (load-theme 'monokai t)
-  (load-theme 'cyberpunk t))
+;; (if window-system
+;;     (load-theme 'monokai t)
+;;   (load-theme 'cyberpunk t))
 
-;; TextMate theme port
-;; (require 'tmtheme)
-;; (setq tmtheme-directory "~/.emacs.d/tmthemes")
-;; (tmtheme-scan)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/zenburn-emacs")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/yamonokai-theme")
+;; (load-theme 'zenburn t)
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/molokai-theme")
+;; (setq molokai-theme-kit t)
+;; (load-theme 'molokai t)
+;; (setq linum-format "%4d ")
+;; (toggle-indicate-empty-lines nil)
+;; (setq-default mode-line-format
+;; 	      (list
+;; 	       ;; the buffer name; the file name as a tool tip
+;; 	       '(:eval (propertize "%b " 'face 'font-lock-keyword-face 'help-echo (buffer-file-name)))
+
+;; 	       ;; line and column
+;; 	       "(" (propertize "%4l" 'face 'font-lock-type-face) "," (propertize "%4c" 'face 'font-lock-type-face) ") "
+;; 	       '(:eval (propertize "%4l" 'face 'font-lock-type-face) (-3 "%4l"))
+
+;; 	       ;; relative position, size of file
+;; 	       "[" (propertize "%p" 'face 'font-lock-constant-face) "/" (propertize "%I" 'face 'font-lock-constant-face) "] "
+
+;; 	       ;; the current major mode for the buffer.
+;; 	       "[" '(:eval (propertize "%m" 'face 'font-lock-string-face 'help-echo buffer-file-coding-system)) "] "
+
+
+;; 	       "[" ;; insert vs overwrite mode, input-method in a tooltip
+;; 	       '(:eval (propertize (if overwrite-mode "Ovr" "Ins")
+;; 				   'face 'font-lock-preprocessor-face
+;; 				   'help-echo (concat "Buffer is in "
+;; 						      (if overwrite-mode "overwrite" "insert") " mode")))
+
+;; 	       ;; was this buffer modified since the last save?
+;; 	       '(:eval (when (buffer-modified-p)
+;; 			 (concat ","  (propertize "Mod"
+;; 						  'face 'font-lock-warning-face
+;; 						  'help-echo "Buffer has been modified"))))
+
+;; 	       ;; is this buffer read-only?
+;; 	       '(:eval (when buffer-read-only
+;; 			 (concat ","  (propertize "RO"
+;; 						  'face 'font-lock-type-face
+;; 						  'help-echo "Buffer is read-only"))))
+;; 	       "] "
+
+;; 	       ;; add the time, with the date and the emacs uptime in the tooltip
+;; 	       '(:eval (propertize (format-time-string "%H:%M")
+;; 				   'help-echo
+;; 				   (concat (format-time-string "%c; ")
+;; 					   (emacs-uptime "Uptime:%hh"))))
+;; 	       " --"
+;; 	       ;; i don't want to see minor-modes; but if you want, uncomment this:
+;; 	       ;; minor-mode-alist  ;; list of minor modes
+;; 	       "%-" ;; fill with '-'
+;; 	       ))
 ;; (when window-system
-;;   (tmtheme-Monokai))
-
+;;   (load-theme 'yamonokai t))
+(load-theme 'monokai t)
+(set-face-attribute 'mode-line nil :box nil)
