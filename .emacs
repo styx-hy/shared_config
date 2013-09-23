@@ -35,7 +35,7 @@
 
 ;; font
 (add-to-list 'default-frame-alist
-	     '(font . "Inconsolata-14"))
+	     '(font . "Monaco-12"))
 
 ;; backup
 (setq backup-by-copyting t
@@ -69,6 +69,8 @@
 
 
 ;;; * Packages
+
+(package-initialize)
 
 ;;; ** perl
 
@@ -110,44 +112,52 @@
 ;; (eval-after-load "auto-complete-config"
 ;;   '(progn
 ;;      (require 'go-autocomplete)
-;; ))
+;;      ))
 ;; (require 'auto-complete-config)
 
-(eval-after-load "company-mode"
-  '(progn
-     (require 'company)                                   ; load company mode
-     (require 'company-go)                                ; load company mode go backend
-     (require 'company-clang)
-     ))
-(setq company-tooltip-limit 20)                      ; bigger popup window
-(setq company-minimum-prefix-length 0)               ; autocomplete right after '.'
-(setq company-idle-delay .3)                         ; shorter delay before autocompletion popup
-(setq company-echo-delay 0)                          ; removes annoying blinking
-(setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+;; (eval-after-load "company-mode"
+;;   '(progn
+;;      ))
+;; (setq company-tooltip-limit 20)                      ; bigger popup window
+;; (setq company-minimum-prefix-length 0)               ; autocomplete right after '.'
+;; (setq company-idle-delay .3)                         ; shorter delay before autocompletion popup
+;; (setq company-echo-delay 0)                          ; removes annoying blinking
+;; (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+;; (add-hook 'after-init-hook (lambda ()
+;; 			     (progn
+;; 			       (require 'company-clang)
+;; 			       (add-hook 'go-mode-hook (lambda ()
+;; 							 (progn
+;; 							   (require 'company) ; load company mode
+;; 							   (require 'company-go) ; load company mode go backend
+;; 							   (set (make-local-variable 'company-backends) '(company-go))
+;; 							   (company-mode))))
+;; 			       (add-hook 'c-mode-hook (lambda ()
+;; 							(company-mode)
+;; 							)))))
+;; (setq geiser-company--completions t)
+
+;; (custom-set-faces
+;;  '(company-preview
+;;    ((t (:foreground "darkgray" :underline t))))
+;;  '(company-preview-common
+;;    ((t (:inherit company-preview))))
+;;  '(company-tooltip
+;;    ((t (:background "lightgray" :foreground "black"))))
+;;  '(company-tooltip-selection
+;;    ((t (:background "steelblue" :foreground "white"))))
+;;  '(company-tooltip-common
+;;    ((((type x)) (:inherit company-tooltip :weight bold))
+;;     (t (:inherit company-tooltip))))
+;;  '(company-tooltip-common-selection
+;;    ((((type x)) (:inherit company-tooltip-selection :weight bold))
+;;     (t (:inherit company-tooltip-selection)))))
+
+;;; ** go-mode
+
+;; change default indent tab width from 8 to 4
 (add-hook 'go-mode-hook (lambda ()
-			  (set (make-local-variable 'company-backends) '(company-go))
-			  (company-mode)))
-
-(add-hook 'c-mode-hook (lambda ()
-			 (company-mode)
-			 ))
-(setq geiser-company--completions t)
-
-(custom-set-faces
- '(company-preview
-   ((t (:foreground "darkgray" :underline t))))
- '(company-preview-common
-   ((t (:inherit company-preview))))
- '(company-tooltip
-   ((t (:background "lightgray" :foreground "black"))))
- '(company-tooltip-selection
-   ((t (:background "steelblue" :foreground "white"))))
- '(company-tooltip-common
-   ((((type x)) (:inherit company-tooltip :weight bold))
-    (t (:inherit company-tooltip))))
- '(company-tooltip-common-selection
-   ((((type x)) (:inherit company-tooltip-selection :weight bold))
-    (t (:inherit company-tooltip-selection)))))
+			  (setq tab-width 4)))
 
 ;;; ** powerline
 
@@ -326,6 +336,12 @@ instead."
 ;; 				  (left-fringe . 0))))
 ;; (sr-speedbar-open);
 
+
+;;; ** tramp
+(setq tramp-ssh-controlmaster-options "")
+(setq tramp-shell-prompt-pattern "\\(?:^\\|
+\\)[^]#$%>›\n]*#?[]#$%>›] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
+
 ;;; ** yasnippet
 
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
@@ -395,33 +411,37 @@ instead."
 
 ;;; ** auto-complete
 
-;; (add-hook 'after-init-hook (lambda ()
-;; 			     (require 'auto-complete-config)
-;; 			     (add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
-;; 			     (ac-config-default)
-;; 			     (setq-default ac-sources '(
-;; 							ac-source-yasnippet
-;; 							ac-source-abbrev
-;; 							ac-source-dictionary
-;; 							ac-source-words-in-same-mode-buffers
-;; 							))
-;; ))
+(add-hook 'after-init-hook (lambda ()
+			     (require 'auto-complete-config)
+			     (add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
+			     (ac-config-default)
+			     (setq-default ac-sources '(
+							ac-source-yasnippet
+							ac-source-abbrev
+							ac-source-dictionary
+							ac-source-words-in-same-mode-buffers
+							))
+))
 
-;; (add-hook 'after-init-hook (lambda ()
-;; 			     (progn
-;; 			       (defun ac-cc-mode-setup ()
-;; 				 (setq ac-clang-complete-executable "~/.emacs.d/emacs-clang-complete-async/clang-complete")
-;; 				 (setq ac-sources '(ac-source-clang-async))
-;; 				 (ac-clang-launch-completion-process)
-;; 				 )
+(add-hook 'after-init-hook (lambda ()
+			     (progn
+			       (defun ac-cc-mode-setup ()
+				 (setq ac-clang-complete-executable "~/.emacs.d/emacs-clang-complete-async/clang-complete")
+				 (setq ac-sources '(ac-source-clang-async))
+				 (ac-clang-launch-completion-process)
+				 )
+			       (defun ac-go-mode-setup ()
+				 (require 'go-autocomplete)
+				 (require 'auto-complete-config)
+				 (add-hook 'before-save-hook #'gofmt-before-save))
 
-;; 			       (defun my-ac-config ()
-;; 				 (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
-;; 				 (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-;; 				 )
+			       (defun my-ac-config ()
+				 (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+				 (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+				 (add-hook 'go-mode-hook 'ac-go-mode-setup)
+				 )
 
-;; 			       (my-ac-config)
-;; )))
+			       (my-ac-config))))
 
 ;;; cursor
 ;; (setq-default cursor-type 'hbar)
@@ -490,9 +510,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
            (lambda ()
 	     (local-set-key (kbd "<tab>") 'markdown-insert-pre)
 	     )))
-
-
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+(require 'load-theme-buffer-local)
 
 ;;; ** org
 
@@ -507,7 +527,83 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ;; organize structure of .emacs configuraton
 (add-hook 'emacs-lisp-mode-hook 'turn-on-orgstruct)
 (setq orgstruct-heading-prefix-regexp "^;;; *")
+(setq org-startup-truncated nil)
 
+(setq org-src-fontify-natively t)
+
+;; Someone says it is not necessary to do the `require' and also shouldn't
+(require 'org-latex)
+
+(defun my-auto-tex-cmd ()
+  "When exporting from .org with latex, automatically run latex,
+     pdflatex, or xelatex as appropriate, using latexmk."
+  (let ((texcmd)))
+  ;; default command: oldstyle latex via dvi
+  (setq texcmd "latexmk -dvi -pdfps -quiet %f")
+  ;; pdflatex -> .pdf
+  (if (string-match "LATEX_CMD: pdflatex" (buffer-string))
+      (setq texcmd "latexmk -pdf -quiet %f"))
+  ;; xelatex -> .pdf
+  (if (string-match "LATEX_CMD: xelatex" (buffer-string))
+      (setq texcmd "latexmk -pdflatex='xelatex -8bit --shell-escape' -pdf -quiet %f"))
+  ;; LaTeX compilation command
+  (setq org-latex-to-pdf-process (list texcmd)))
+(add-hook 'org-latex-after-initial-vars-hook 'my-auto-tex-cmd)
+
+(defun my-auto-tex-parameters ()
+  "Automatically select the tex packages to include."
+  ;; default packages for ordinary latex or pdflatex export
+  (setq org-latex-default-packages-alist
+	'(("AUTO" "inputenc" t)
+	  ("T1"   "fontenc"   t)
+	  (""     "fixltx2e"  nil)
+	  (""     "wrapfig"   nil)
+	  (""     "soul"      t)
+	  (""     "textcomp"  t)
+	  (""     "marvosym"  t)
+	  (""     "wasysym"   t)
+	  (""     "latexsym"  t)
+	  (""     "amssymb"   t)
+	  (""     "hyperref"  nil)))
+  
+  ;; Packages to include when xelatex is used
+  ;; (see https://github.com/kjhealy/latex-custom-kjh for the 
+  ;; non-standard ones.)
+  (if (string-match "LATEX_CMD: xelatex" (buffer-string))
+      (setq org-latex-default-packages-alist
+	    '(("" "fontspec" t)
+	      ("" "xunicode" t)
+	      ("" "url" t)
+	      ("" "rotating" t)
+	      ("" "memoir-article-styles" t)
+	      ("american" "babel" t)
+	      ("babel" "csquotes" t)
+	      ("" "listings" nil)
+	      ("" "listings-sweave-xelatex" nil)
+	      ("svgnames" "xcolor" t)
+	      ("" "soul" t)
+	      ("xetex, colorlinks=true, urlcolor=FireBrick, plainpages=false, pdfpagelabels, bookmarksnumbered" "hyperref" nil)
+	      )))
+  
+  (if (string-match "LATEX_CMD: xelatex" (buffer-string))
+      (setq org-latex-classes
+	    (cons '("article"
+		    "\\documentclass[11pt,article,oneside]{memoir}
+  \\input{vc}
+  \\usepackage[style=authoryear-comp-ajs, abbreviate=true]{biblatex}
+  \\bibliography{socbib}"
+		    ("\\section{%s}" . "\\section*{%s}")
+		    ("\\subsection{%s}" . "\\subsection*{%s}")
+		    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		    ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		    ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+		  org-latex-classes))))  
+
+(add-hook 'org-latex-after-initial-vars-hook 'my-auto-tex-parameters)
+
+(setq org-latex-listings 'minted)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+;; (add-to-list 'org-latex-packages-alist '("" "color"))
 
 ;;; ** linum-mode
 (global-linum-mode 1)
@@ -657,7 +753,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 
 ;;; * Themes
-(package-initialize)
 ;; (if window-system
 ;;     (load-theme 'monokai t)
 ;;   (load-theme 'cyberpunk t))
@@ -720,3 +815,4 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ;;   (load-theme 'yamonokai t))
 (load-theme 'monokai t)
 (set-face-attribute 'mode-line nil :box nil)
+(set-face-attribute 'mode-line-inactive nil :box nil)
