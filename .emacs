@@ -72,6 +72,12 @@
 
 (package-initialize)
 
+;;; ** ansi-term
+(add-hook 'term-exec-hook
+          (function
+           (lambda ()
+             (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
+
 ;;; ** perl
 
 ;; append perlbrew path to environment variable
@@ -449,10 +455,32 @@ instead."
 ;; (change-cursor-mode t)
 ;; (toggle-cursor-type-when-idle t)
 
-;;; ** xcscope
+;;; ** xcscope/ascope
 
-(add-to-list 'load-path "~/.emacs.d/xcscope")
-(require 'xcscope)
+;; (add-to-list 'load-path "~/.emacs.d/xcscope")
+;; (require 'xcscope)
+(require 'ascope)
+(add-hook 'after-init-hook
+	  (lambda ()
+	    (progn
+	      (defun ascope-c-mode-setup ()
+		(progn
+		  (define-key c-mode-base-map (kbd "C-c s a") 'ascope-init)
+		  (define-key c-mode-base-map (kbd "C-c s g") 'ascope-find-global-definition)
+		  (define-key c-mode-base-map (kbd "C-c s c") 'ascope-find-functions-calling-this-function)
+		  (define-key c-mode-base-map (kbd "C-c s s") 'ascope-find-this-symbol)
+		  (define-key c-mode-base-map (kbd "C-c s u") 'ascope-pop-mark)))
+	      (defun ascope-asm-mode-setup ()
+		(progn
+		  (define-key asm-mode-map (kbd "C-c s a") 'ascope-init)
+		  (define-key asm-mode-map (kbd "C-c s g") 'ascope-find-global-definition)
+		  (define-key asm-mode-map (kbd "C-c s c") 'ascope-find-functions-calling-this-function)
+		  (define-key asm-mode-map (kbd "C-c s s") 'ascope-find-this-symbol)
+		  (define-key asm-mode-map (kbd "C-c s u") 'ascope-pop-mark)))
+	      (defun my-ascope-config ()
+		(add-hook 'c-mode-common-hook 'ascope-c-mode-setup)
+		(add-hook 'asm-mode-hook 'ascope-asm-mode-setup))
+	      (my-ascope-config))))
 
 ;; eshell
 (setq eshell-cmpl-ignore-case t)
