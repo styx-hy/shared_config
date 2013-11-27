@@ -67,6 +67,15 @@
            (list (region-beginning) (region-end))
          (list (line-beginning-position) (line-beginning-position 2)))))
 
+;; open large files
+(defun my-find-file-check-make-large-file-read-only-hook ()
+  "If a file is over a given size, make the buffer read only."
+  (when (> (buffer-size) (* 1024 1024))
+    (setq buffer-read-only t)
+    (buffer-disable-undo)
+    (fundamental-mode)))
+
+(add-hook 'find-file-hooks 'my-find-file-check-make-large-file-read-only-hook)
 
 ;;; * Packages
 
@@ -326,6 +335,9 @@ instead."
 
 ;; (when window-system
 ;;   (require 'sr-speedbar))
+;; (defun my-semantic-hook ()
+;;   (imenu-add-to-menubar "TAGS"))
+;; (add-hook 'semantic-init-hooks 'my-semantic-hook)
 ;; (setq speedbar-show-unknown-files t)
 ;; (setq sr-speedbar-right-side nil)
 ;; ;; (custom-set-variables '(sr-speedbar-right-side nil) '(sr-speedbar-skip-other-window-p t) '(sr-speedbar-max-width 30) '(sr-speedbar-width-x 30))
@@ -396,6 +408,7 @@ instead."
 ;; (font-lock-add-keywords 'c-mode '(("for" . font-lock-keyword-face)))
 ;; (font-lock-add-keywords 'c-mode '(("while" . font-lock-keyword-face)))
 (global-font-lock-mode t)
+;; (setq font-lock-defaults t)
 
 ;; (when (and (fboundp 'semantic-mode)
 ;;            (not (locate-library "semantic-ctxt"))) ; can't found offical cedet
@@ -633,6 +646,39 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (add-to-list 'org-latex-packages-alist '("" "minted"))
 ;; (add-to-list 'org-latex-packages-alist '("" "color"))
 
+
+;;; ** org-jekyll
+(require 'org-publish)
+
+(setq org-publish-yh "~/zion/yanghong.info/")
+(setq org-publish-yh-blog "~/zion/yanghong.info/")
+
+(setq org-jekyll-lang-subdirs '(("en" . "publish-blog/blog/")))
+
+(add-to-list 'org-publish-project-alist
+             `("yh-org"
+               :base-directory "~/Dropbox/notes/"
+               :recursive t
+               :base-extension "org"
+               :publishing-directory ,org-publish-yh
+               ;; :exclude "^blog\\|^bitacora\\|yanghong.info"
+               :site-root "http://yanghong.info"
+               :jekyll-sanitize-permalinks t
+               :publishing-function org-html-publish-to-html
+               :section-numbers nil
+               :headline-levels 4
+               :table-of-contents t
+               :auto-index nil
+               :auto-preamble nil
+               :body-only nil
+               :auto-postamble nil))
+
+;; (add-to-list 'org-publish-project-alist
+;;              '("yh" :components ("yh-org"
+;;                                  ;; "jr-img")))
+;; 				 )))
+
+
 ;;; ** linum-mode
 (global-linum-mode 1)
 ;; seperate line numbers from text
@@ -643,6 +689,10 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 				       (count-lines (point-min) (point-max))))))
 		       (concat " %" (number-to-string w) "d ")) line) 'face 'linum)))
 (column-number-mode 1)
+(add-hook 'linum-mode-hook (lambda ()
+			     (progn
+			       (require 'auto-complete-config)
+			       (ac-linum-workaround))))
 
 ;;; ** slime & scheme
 
@@ -671,30 +721,53 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-hook
-          (lambda ()
-            (let ((filename (buffer-file-name)))
-              ;; Enable kernel mode for the appropriate files
-              (when (and filename
-                         (string-match "drreplay"
-				       (expand-file-name filename)))
-		(setq comment-start "//"
-		      comment-end   "")
-		(defun google-c-lineup-expression-plus-8 (langelem)
-		  (save-excursion
-		    (back-to-indentation)
-		    ;; Go to beginning of *previous* line:
-		    (c-backward-syntactic-ws)
-		    (back-to-indentation)
-		    ;; We are making a reasonable assumption that if there is a control
-		    ;; structure to indent past, it has to be at the beginning of the line.
-		    (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
-			(goto-char (match-end 1)))
-		    (vector (+ 8 (current-column)))))
-		(c-set-offset 'arglist-intro
-			      'google-c-lineup-expression-plus-8)
-		(c-set-offset 'arglist-cont-nonempty
-			      '(c-lineup-gcc-asm-reg (c-lineup-argcont 8)))))))
+(defun my-c-style-hook ()
+  (let ((filename (buffer-file-name)))
+    ;; Enable kernel mode for the appropriate files
+    (when (and filename
+	       (string-match "drreplay"
+			     (expand-file-name filename)))
+      (setq comment-start "//"
+	    comment-end   "")
+      (defun google-c-lineup-expression-plus-8 (langelem)
+	(save-excursion
+	  (back-to-indentation)
+	  ;; Go to beginning of *previous* line:
+	  (c-backward-syntactic-ws)
+	  (back-to-indentation)
+	  ;; We are making a reasonable assumption that if there is a control
+	  ;; structure to indent past, it has to be at the beginning of the line.
+	  (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
+	      (goto-char (match-end 1)))
+	  (vector (+ 8 (current-column)))))
+      (c-set-offset 'arglist-intro
+		    'google-c-lineup-expression-plus-8)
+      (c-set-offset 'arglist-cont-nonempty
+		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 8))))
+
+    (when (and filename
+	       (string-match "cse-lab"
+			     (expand-file-name filename)))
+      (defun google-c-lineup-expression-plus-8 (langelem)
+	(save-excursion
+	  (back-to-indentation)
+	  ;; Go to beginning of *previous* line:
+	  (c-backward-syntactic-ws)
+	  (back-to-indentation)
+	  ;; We are making a reasonable assumption that if there is a control
+	  ;; structure to indent past, it has to be at the beginning of the line.
+	  (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
+	      (goto-char (match-end 1)))
+	  (vector (+ 8 (current-column)))))
+      (setq c-basic-offset 2)
+      (c-set-offset 'arglist-intro
+		    'google-c-lineup-expression-plus-8)
+      (c-set-offset 'arglist-cont-nonempty
+		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 8))))))
+(add-hook 'c-mode-hook 'my-c-style-hook)
+(add-hook 'c++-mode-hook 'my-c-style-hook)
+
+
 ;; highlight fixme
 ;; (add-hook 'c-mode-common-hook
 ;;                (lambda ()
@@ -722,6 +795,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ;;; ** cperl-mode
 
 (defalias 'perl-mode 'cperl-mode)
+
+
+;;; ** evernote-mode
 
 ;;; ** daemon settings
 
