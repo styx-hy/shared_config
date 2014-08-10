@@ -25,6 +25,7 @@
 (setq initial-frame-alist
       `((height . 60)
 	(width . 150)))
+(setq-default line-spacing 2)
 
 ;; scrolling
 (setq scroll-margin 10)
@@ -38,7 +39,7 @@
 	     '(font . "Monaco-12"))
 
 ;; backup
-(setq backup-by-copyting t
+(setq backup-by-copying t
       backup-directory-alist
       '(("." . "~/.saves"))
       delete-old-versions t
@@ -77,10 +78,33 @@
 
 (add-hook 'find-file-hooks 'my-find-file-check-make-large-file-read-only-hook)
 
+;; controls
+(windmove-default-keybindings 'meta)
+
+;; global key rebinding
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "C-x C-k") '(lambda ()
+				   ;; kill current active buffer
+				   (interactive)
+				   (kill-buffer (current-buffer))))
+(global-set-key (kbd "C-x b") 'ibuffer)
+(global-set-key (kbd "C-=") 'cssh-term-remote-open)
+
+(global-set-key (kbd "s-p") 'previous-line)
+(global-set-key (kbd "s-n") 'next-line)
+(global-set-key (kbd "s-b") 'backward-char)
+(global-set-key (kbd "s-f") 'forward-char)
+(global-set-key (kbd "s-o") 'find-file)
+
+;; desktop
+(desktop-save-mode t)
+
 ;;; * Packages
 
 (package-initialize)
 
+;;; ** ag
+(setq ag-highlight-search t)
 ;;; ** ansi-term
 (add-hook 'term-exec-hook
           (function
@@ -174,6 +198,9 @@
 (add-hook 'go-mode-hook (lambda ()
 			  (setq tab-width 4)))
 
+;;; ** lua-mode
+;; use an indentation width of two spaces
+(setq lua-indent-level 2)
 ;;; ** powerline
 
 ;; (add-to-list 'load-path "~/.emacs.d/powerline")
@@ -192,6 +219,17 @@
 ;; (when window-system
 ;;   (global-hl-line-mode t))
 
+;;; ** quack
+;; The binary of your interpreter
+(setq scheme-program-name "racket")
+ 
+;; This hook lets you use your theme colours instead of quack's ones.
+;; (defun scheme-mode-quack-hook ()
+;;   (require 'quack)
+;;   ;; (setq quack-fontify-style 'plt)
+;;   )
+;; (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook)
+
 ;;; ** ido
 
 (require 'ido)
@@ -201,9 +239,11 @@
 (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
 (global-set-key (kbd "M-i") 'ido-goto-symbol)
 (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-(global-set-key (kbd "C-x b") 'list-buffers)
+;; (global-set-key (kbd "C-x b") 'list-buffers)
 ;; (global-set-key (kbd "C-x C-b") 'list-buffers)
 ;; (global-set-key (kbd "C-x b") 'ido-switch-buffer)
+
+;; From EmacsWiki
 (defun ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
   (interactive)
@@ -215,16 +255,19 @@
 	  (ido-enable-flex-matching
 	   (if (boundp 'ido-enable-flex-matching)
 	       ido-enable-flex-matching t))
+	  ;; N.B. `let' syntax, symbol solely will be bould to nil
 	  name-and-pos symbol-names position)
       (unless ido-mode
 	      (ido-mode 1)
 	      (setq ido-enable-flex-matching t))
       (while (progn
+	       ;; this is "repeat...until" mode of while loop
+	       ;; the last statement will act as the end-test
 	      (imenu--cleanup)
 	      (setq imenu--index-alist nil)
-	      (ido-goto-symbol (imenu--make-index-alist))
+	      (ido-goto-symbol (imenu--make-index-alist)) ; generate the symbols
 	      (setq selected-symbol
-		    (ido-completing-read "Symbol? " symbol-names))
+		    (ido-completing-read "Symbol: " symbol-names))
 	      (string= (car imenu--rescan-item) selected-symbol)))
       (unless (and (boundp 'mark-active) mark-active)
 	      (push-mark nil t nil))
@@ -247,7 +290,7 @@
 		(setq name symbol)
 		(setq position
 		      (get-text-property 1 'org-imenu-marker symbol))))
-	      (unless (or (null position) (null name)
+	      (unless (or (null position) (null name) ;; test if variable is still nil
 			  (string= (car imenu--rescan-item) name))
 		      (add-to-list 'symbol-names name)
 		      (add-to-list 'name-and-pos (cons name position))))))))
@@ -356,7 +399,8 @@ instead."
 
 
 ;;; ** tramp
-(setq tramp-ssh-controlmaster-options "")
+(setq tramp-ssh-controlmaster-options (concat "-o ControlPath=~/.ssh/cm_socket/%r@%h:%p "
+					      "-o ControlMaster=auto -o ControlPersist=no"))
 (setq tramp-shell-prompt-pattern "\\(?:^\\|
 \\)[^]#$%>›\n]*#?[]#$%>›] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
 
@@ -553,9 +597,40 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 	     )))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-(require 'load-theme-buffer-local)
-
 ;;; ** org
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
+ '(compilation-message-face (quote default))
+ '(custom-safe-themes (quote ("60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
+ '(fci-rule-color "#49483E")
+ '(fill-column 80)
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-tail-colors (quote (("#49483E" . 0) ("#67930F" . 20) ("#349B8D" . 30) ("#21889B" . 50) ("#968B26" . 60) ("#A45E0A" . 70) ("#A41F99" . 85) ("#49483E" . 100))))
+ '(ido-max-window-height 15)
+ '(magit-diff-use-overlays nil)
+ '(org-capture-templates (quote (("m" "Miscellaneous pieces of thoughts" entry (file+headline (concat org-directory "/misc.org") "")) ("t" "Task" entry (file+headline (concat org-directory "/todo.org") "Tasks") "* TODO %?
+  %u
+  %a"))))
+ '(org-default-notes-file "~/Dropbox/notes/todo.org")
+ '(org-directory "~/Dropbox/notes")
+ '(split-height-threshold 120)
+ '(syslog-debug-face (quote ((t :background unspecified :foreground "#A1EFE4" :weight bold))))
+ '(syslog-error-face (quote ((t :background unspecified :foreground "#F92672" :weight bold))))
+ '(syslog-hour-face (quote ((t :background unspecified :foreground "#A6E22E"))))
+ '(syslog-info-face (quote ((t :background unspecified :foreground "#66D9EF" :weight bold))))
+ '(syslog-ip-face (quote ((t :background unspecified :foreground "#E6DB74"))))
+ '(syslog-su-face (quote ((t :background unspecified :foreground "#FD5FF0"))))
+ '(syslog-warn-face (quote ((t :background unspecified :foreground "#FD971F" :weight bold))))
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map (quote ((20 . "#F92672") (40 . "#CF4F1F") (60 . "#C26C0F") (80 . "#E6DB74") (100 . "#AB8C00") (120 . "#A18F00") (140 . "#989200") (160 . "#8E9500") (180 . "#A6E22E") (200 . "#729A1E") (220 . "#609C3C") (240 . "#4E9D5B") (260 . "#3C9F79") (280 . "#A1EFE4") (300 . "#299BA6") (320 . "#2896B5") (340 . "#2790C3") (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list (quote (unspecified "#272822" "#49483E" "#A20C41" "#F92672" "#67930F" "#A6E22E" "#968B26" "#E6DB74" "#21889B" "#66D9EF" "#A41F99" "#FD5FF0" "#349B8D" "#A1EFE4" "#F8F8F2" "#F8F8F0"))))
+(global-set-key "\C-cn" 'org-capture)
 
 (setq org-todo-keywords
        '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
@@ -564,6 +639,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
        (let (org-log-done org-log-states)   ; turn off logging
          (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+(setq org-todo-done 'note)
 
 ;; organize structure of .emacs configuraton
 (add-hook 'emacs-lisp-mode-hook 'turn-on-orgstruct)
@@ -646,32 +723,129 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (add-to-list 'org-latex-packages-alist '("" "minted"))
 ;; (add-to-list 'org-latex-packages-alist '("" "color"))
 
+;; reftex settings
+(defun org-mode-reftex-setup ()
+  ;; (load-library "reftex")
+  (require 'reftex)
+  (and (buffer-file-name) (file-exists-p (buffer-file-name))
+       (progn
+	 ;; enable auto-revert-mode to update reftex when bibtex file changes on disk
+	 (global-auto-revert-mode t)
+	 (reftex-parse-all)
+	 ;; add a custom reftex cite format to insert links
+	 (reftex-set-cite-format
+	  '((?b . "[[bib:%l][%l-bib]]")
+	    (?n . "[[notes:%l][%l-notes]]")
+	    (?p . "[[papers:%l][%l-paper]]")
+	    (?t . "%t")
+	    (?h . "** %t\n:PROPERTIES:\n:Custom_ID: %l\n:END:\n[[papers:%l][%l-paper]]")))))
+  (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
+  (define-key org-mode-map (kbd "C-c (") 'org-mode-reftex-search))
+
+(add-hook 'org-mode-hook 'org-mode-reftex-setup)
 
 ;;; ** org-jekyll
-(require 'org-publish)
+;; (require 'org-publish)
+(setq org-export-async-debug t)
+;; (setq org-html-html5-fancy t)
 
-(setq org-publish-yh "~/zion/yanghong.info/")
-(setq org-publish-yh-blog "~/zion/yanghong.info/")
+(defadvice org-html-paragraph (before org-html-paragraph-advice
+				      (paragraph contents info) activate)
+  "Join consecutive Chinese lines into a single long line without
+unwanted space when exporting org-mode to html."
+  (let* ((fixed-contents)
+	 (origin-contents (ad-get-arg 1))
+	 (fix-regexp "[[:multibyte:]]"))
+    (setq fixed-contents
+	  (replace-regexp-in-string
+	   (concat
+	    "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2"
+	    origin-contents))
+    (ad-set-arg 1 fixed-contents)))
 
-(setq org-jekyll-lang-subdirs '(("en" . "publish-blog/blog/")))
+(defadvice org-publish-org-sitemap
+  (after remove-index-from-sitemap (project &optional sitemap-filename) activate)
+  ;; search backward because the default position is at the end
+  ;; because the buffer is closed by `org-publish-org-sitemap'
+  ;; so I have to open it again
+  (with-current-buffer
+      (let* ((project-plist (cdr project))
+	     (dir (file-name-as-directory
+		   (plist-get project-plist :base-directory)))
+	     (sitemap-filename (concat dir (or sitemap-filename "sitemap.org"))))
+      	(setq sitemap-buffer
+	      (find-file sitemap-filename)))
+    (while (search-forward-regexp "^.*index.*\n" nil t)
+      (replace-match "" t t))
+    ;; (search-backward-regexp "^.*index.*\n" nil t)
+    ;; (replace-match "" t t)
+    (save-buffer))
+  )
 
-(add-to-list 'org-publish-project-alist
-             `("yh-org"
-               :base-directory "~/Dropbox/notes/"
-               :recursive t
-               :base-extension "org"
-               :publishing-directory ,org-publish-yh
-               ;; :exclude "^blog\\|^bitacora\\|yanghong.info"
-               :site-root "http://yanghong.info"
-               :jekyll-sanitize-permalinks t
-               :publishing-function org-html-publish-to-html
-               :section-numbers nil
-               :headline-levels 4
-               :table-of-contents t
-               :auto-index nil
-               :auto-preamble nil
-               :body-only nil
-               :auto-postamble nil))
+;; (defadvice org-publish-org-sitemap
+;;   (around remove-index-from-sitemap (project &optional sitemap-filename) activate)
+;;   (let ((project (ad-get-arg 0)))
+;;     (ad-set-arg 0 (cons (car project) (plist-put (cdr project) :exclude "index.org")))
+;;     (ad-do-it)
+;;     (plist-put (cdr project) :exclude nil)))
+
+;; (defun my-org-html-publish-to-html (plist filename pub-dir)
+;;   ;; (message "---------")
+;;   ;; (message filename)
+;;   (if (string-equal (file-name-nondirectory filename) "sitemap.org")
+;;       (org-html-publish-to-html (plist-put plist :body-only t)
+;; 				filename pub-dir)
+;;     (org-html-publish-to-html plist filename pub-dir)))
+
+(setq org-publish-project-alist
+      '(
+	("org-blog"
+	 :base-directory "~/Dropbox/notes/org-blog/"
+	 :base-extension "org"
+	 :publishing-directory "~/zion/org-blog/"
+	 :recursive t
+	 :publishing-function org-html-publish-to-html
+         :headline-levels 4               ; Just the default for this project.
+         ;; :auto-preamble t
+         :auto-sitemap t                  ; Generate sitemap.org automagically...
+         :sitemap-filename "sitemap.org"  ; ... call it sitemap.org (it's the default)...
+         :sitemap-title ""                ; ... with title 'Sitemap'.
+         :export-creator-info nil    ; Disable the inclusion of "Created by Org" in the postamble.
+         :export-author-info nil     ; Disable the inclusion of "Author: Your Name" in the postamble.
+         :auto-postamble nil         ; Disable auto postamble 
+         :table-of-contents t        ; Set this to "t" if you want a table of contents, set to "nil" disables TOC.
+         :section-numbers nil        ; Set this to "t" if you want headings to have numbers.
+         ;; :html-postamble "    <p class=\"postamble\">Last Updated %d.</p> " ; your personal postamble
+	 
+:html-postamble ""
+         :html-head-include-default-style nil  ;Disable the default css style
+	 :html-head-include-scripts nil
+	 :html-html5-fancy t
+	 :html-doctype "html5"
+)))
+
+;; (setq org-publish-yh "~/zion/yanghong.info/")
+;; (setq org-publish-yh-blog "~/zion/yanghong.info/")
+
+;; (setq org-jekyll-lang-subdirs '(("en" . "publish-blog/blog/")))
+
+;; (add-to-list 'org-publish-project-alist
+;;              `("yh-org"
+;;                :base-directory "~/Dropbox/notes/"
+;;                :recursive t
+;;                :base-extension "org"
+;;                :publishing-directory ,org-publish-yh
+;;                ;; :exclude "^blog\\|^bitacora\\|yanghong.info"
+;;                :site-root "http://yanghong.info"
+;;                :jekyll-sanitize-permalinks t
+;;                :publishing-function org-html-publish-to-html
+;;                :section-numbers nil
+;;                :headline-levels 4
+;;                :table-of-contents t
+;;                :auto-index nil
+;;                :auto-preamble nil
+;;                :body-only nil
+;;                :auto-postamble nil))
 
 ;; (add-to-list 'org-publish-project-alist
 ;;              '("yh" :components ("yh-org"
@@ -744,10 +918,11 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 		    'google-c-lineup-expression-plus-8)
       (c-set-offset 'arglist-cont-nonempty
 		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 8))))
-
     (when (and filename
-	       (string-match "cse-lab"
-			     (expand-file-name filename)))
+	       (or (string-match "cse-lab"
+				 (expand-file-name filename))
+		   (string-match "yparse"
+				 (expand-file-name filename))))
       (defun google-c-lineup-expression-plus-8 (langelem)
 	(save-excursion
 	  (back-to-indentation)
@@ -759,7 +934,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 	  (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
 	      (goto-char (match-end 1)))
 	  (vector (+ 8 (current-column)))))
-      (setq c-basic-offset 2)
+      (setq c-basic-offset 4)
       (c-set-offset 'arglist-intro
 		    'google-c-lineup-expression-plus-8)
       (c-set-offset 'arglist-cont-nonempty
@@ -845,16 +1020,24 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
- '(ido-max-window-height 15)
- '(split-height-threshold 120))
+ '(variable-pitch ((t (:family "Lucida Grande")))))
 
+
+
+;;; ** Literature
+(defun dired-literature-create-directory-from-pdf ()
+  (interactive)
+  (save-window-excursion
+    (dired-do-async-shell-command
+     "~/Documents/research_library/scripts/litcreatedir.sh" current-prefix-arg
+     (dired-get-marked-files t current-prefix-arg))))
+(require 'dired)
+(define-key dired-mode-map (kbd "C-c l") 'dired-literature-create-directory-from-pdf)
+
+(defun literature-update ()
+  (interactive)
+  (shell-command "~/Documents/research_library/scripts/litupdate.sh"))
+(global-set-key (kbd "C-c u") 'literature-update)
 
 ;;; * Themes
 ;; (if window-system
