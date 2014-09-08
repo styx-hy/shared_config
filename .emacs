@@ -129,8 +129,8 @@
 
 ;;; ** Git
 
-(add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
-(require 'git)
+;; (add-to-list 'load-path "/usr/local/share/git-core/contrib/emacs")
+;; (require 'git)
 (global-set-key (kbd "C-c i") 'magit-status) ; 'i' for info (of git repo)
 
 ;; ;; bookmark+
@@ -775,12 +775,25 @@ unwanted space when exporting org-mode to html."
 	     (sitemap-filename (concat dir (or sitemap-filename "sitemap.org"))))
       	(setq sitemap-buffer
 	      (find-file sitemap-filename)))
-    (while (search-forward-regexp "^.*index.*\n" nil t)
+    ;; move cursor to beginning of buffer
+    (beginning-of-buffer)
+    ;; search for index and delete it
+    (while (search-forward-regexp "^.*\\(index\\|about\\|header\\).*\n" nil t)
       (replace-match "" t t))
-    ;; (search-backward-regexp "^.*index.*\n" nil t)
-    ;; (replace-match "" t t)
-    (save-buffer))
-  )
+
+    ;; move date to a span outside anchor
+    (beginning-of-buffer)
+    (replace-regexp " \\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)\\]\\]" "]]
+     #+BEGIN_HTML
+       <span class=\"timestamp\">\\1</span>
+     #+END_HTML")
+    (save-buffer)))
+
+(defadvice org-html-template
+  (after org-html-disable-title-in-content (contents info) activate)
+  (if (string-equal (file-name-nondirectory filename) "index.org")
+      (setq ad-return-value
+	    (replace-regexp-in-string "<h1 class=\"title\">.*\n" "" ad-return-value))))
 
 ;; (defadvice org-publish-org-sitemap
 ;;   (around remove-index-from-sitemap (project &optional sitemap-filename) activate)
@@ -806,52 +819,50 @@ unwanted space when exporting org-mode to html."
 	 :recursive t
 	 :publishing-function org-html-publish-to-html
          :headline-levels 4               ; Just the default for this project.
-         ;; :auto-preamble t
+         :auto-preamble nil
          :auto-sitemap t                  ; Generate sitemap.org automagically...
          :sitemap-filename "sitemap.org"  ; ... call it sitemap.org (it's the default)...
          :sitemap-title ""                ; ... with title 'Sitemap'.
+	 :sitemap-file-entry-format "%t %d"
+	 :sitemap-sort-files anti-chronologically
          :export-creator-info nil    ; Disable the inclusion of "Created by Org" in the postamble.
          :export-author-info nil     ; Disable the inclusion of "Author: Your Name" in the postamble.
          :auto-postamble nil         ; Disable auto postamble 
          :table-of-contents t        ; Set this to "t" if you want a table of contents, set to "nil" disables TOC.
          :section-numbers nil        ; Set this to "t" if you want headings to have numbers.
          ;; :html-postamble "    <p class=\"postamble\">Last Updated %d.</p> " ; your personal postamble
-	 
-:html-postamble ""
+
+	 :html-preamble "<div class=\"header\">
+<div class=\"header-menu\">
+<ul class=\"org-ul\">
+<li><a href=\"about.html\">ABOUT</a>
+</li>
+</ul>
+</div>
+<section class=\"header-name\"><a href=\"/\"><b>Y</b>ANG<b>H</b>ONG</a></section>
+</div>
+"
+	 :html-postamble "<div id=\"disqus_thread\"></div>
+    <script type=\"text/javascript\">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'yanghong'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href=\"http://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>
+    <a href=\"http://disqus.com\" class=\"dsq-brlink\">comments powered by <span class=\"logo-disqus\">Disqus</span></a>"
          :html-head-include-default-style nil  ;Disable the default css style
 	 :html-head-include-scripts nil
 	 :html-html5-fancy t
 	 :html-doctype "html5"
+
+	 :with-toc nil 			; Disable table of contents
 )))
-
-;; (setq org-publish-yh "~/zion/yanghong.info/")
-;; (setq org-publish-yh-blog "~/zion/yanghong.info/")
-
-;; (setq org-jekyll-lang-subdirs '(("en" . "publish-blog/blog/")))
-
-;; (add-to-list 'org-publish-project-alist
-;;              `("yh-org"
-;;                :base-directory "~/Dropbox/notes/"
-;;                :recursive t
-;;                :base-extension "org"
-;;                :publishing-directory ,org-publish-yh
-;;                ;; :exclude "^blog\\|^bitacora\\|yanghong.info"
-;;                :site-root "http://yanghong.info"
-;;                :jekyll-sanitize-permalinks t
-;;                :publishing-function org-html-publish-to-html
-;;                :section-numbers nil
-;;                :headline-levels 4
-;;                :table-of-contents t
-;;                :auto-index nil
-;;                :auto-preamble nil
-;;                :body-only nil
-;;                :auto-postamble nil))
-
-;; (add-to-list 'org-publish-project-alist
-;;              '("yh" :components ("yh-org"
-;;                                  ;; "jr-img")))
-;; 				 )))
-
 
 ;;; ** linum-mode
 (global-linum-mode 1)
