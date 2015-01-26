@@ -11,7 +11,8 @@
 (setq display-time-24hr-format t)
 (show-paren-mode t)
 (blink-cursor-mode -1)
-(add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/elpa")
+(add-to-list 'load-path "~/.emacs.d/etc")
 
 ;; emacs -nw:  emacs in terminal
 ;; map RET to [return] in terminal mode, fix `ret` in cscope jumping
@@ -25,7 +26,7 @@
 (setq initial-frame-alist
       `((height . 60)
 	(width . 150)))
-(setq-default line-spacing 2)
+;; (setq-default line-spacing 2)
 
 ;; scrolling
 (setq scroll-margin 10)
@@ -35,6 +36,8 @@
 (setq read-file-name-completion-ignore-case t)
 
 ;; font
+;; (add-to-list 'default-frame-alist
+;; 	     '(font . "PragmataPro-14"))
 (add-to-list 'default-frame-alist
 	     '(font . "Monaco-12"))
 
@@ -105,6 +108,8 @@
 
 ;;; ** ag
 (setq ag-highlight-search t)
+(setq ag-reuse-window 't)
+(global-set-key [f2] 'ag-project)
 ;;; ** ansi-term
 (add-hook 'term-exec-hook
           (function
@@ -409,7 +414,10 @@ instead."
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 (require 'yasnippet)
 
-(define-key yas-minor-mode-map (kbd "C-c ; u") 'yas/expand)
+;; first unbind the tab from auto expand
+;; (define-key yas-minor-mode-map (kbd "TAB") nil)
+;; (define-key yas-minor-mode-map [(tab)] nil)
+(define-key yas-minor-mode-map (kbd "C-c ; u") 'yas-expand)
 (defadvice yas/insert-snippet (around use-completing-prompt activate)
   "Use `yas/completing-prompt' for `yas/prompt-functions' but only here..."
   (let ((yas/prompt-functions '(yas/completing-prompt)))
@@ -598,38 +606,89 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
 ;;; ** org
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
+ '(ansi-color-names-vector
+   ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
  '(compilation-message-face (quote default))
- '(custom-safe-themes (quote ("60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
+ '(custom-safe-themes
+   (quote
+    ("64581032564feda2b5f2cf389018b4b9906d98293d84d84142d90d7986032d33" "60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
  '(fci-rule-color "#49483E")
  '(fill-column 80)
+ '(helm-split-window-in-side-p t)
  '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
- '(highlight-tail-colors (quote (("#49483E" . 0) ("#67930F" . 20) ("#349B8D" . 30) ("#21889B" . 50) ("#968B26" . 60) ("#A45E0A" . 70) ("#A41F99" . 85) ("#49483E" . 100))))
+ '(highlight-tail-colors
+   (quote
+    (("#49483E" . 0)
+     ("#67930F" . 20)
+     ("#349B8D" . 30)
+     ("#21889B" . 50)
+     ("#968B26" . 60)
+     ("#A45E0A" . 70)
+     ("#A41F99" . 85)
+     ("#49483E" . 100))))
  '(ido-max-window-height 15)
  '(magit-diff-use-overlays nil)
- '(org-capture-templates (quote (("m" "Miscellaneous pieces of thoughts" entry (file+headline (concat org-directory "/misc.org") "")) ("t" "Task" entry (file+headline (concat org-directory "/todo.org") "Tasks") "* TODO %?
+ '(org-capture-templates
+   (quote
+    (("m" "Miscellaneous pieces of thoughts" entry
+      (file+headline
+       (concat org-directory "/misc.org")
+       ""))
+     ("t" "Task" entry
+      (file+headline
+       (concat org-directory "/todo.org")
+       "Tasks")
+      "* TODO %?
   %u
   %a"))))
  '(org-default-notes-file "~/Dropbox/notes/todo.org")
  '(org-directory "~/Dropbox/notes")
  '(split-height-threshold 120)
- '(syslog-debug-face (quote ((t :background unspecified :foreground "#A1EFE4" :weight bold))))
- '(syslog-error-face (quote ((t :background unspecified :foreground "#F92672" :weight bold))))
+ '(syslog-debug-face
+   (quote
+    ((t :background unspecified :foreground "#A1EFE4" :weight bold))))
+ '(syslog-error-face
+   (quote
+    ((t :background unspecified :foreground "#F92672" :weight bold))))
  '(syslog-hour-face (quote ((t :background unspecified :foreground "#A6E22E"))))
- '(syslog-info-face (quote ((t :background unspecified :foreground "#66D9EF" :weight bold))))
+ '(syslog-info-face
+   (quote
+    ((t :background unspecified :foreground "#66D9EF" :weight bold))))
  '(syslog-ip-face (quote ((t :background unspecified :foreground "#E6DB74"))))
  '(syslog-su-face (quote ((t :background unspecified :foreground "#FD5FF0"))))
- '(syslog-warn-face (quote ((t :background unspecified :foreground "#FD971F" :weight bold))))
+ '(syslog-warn-face
+   (quote
+    ((t :background unspecified :foreground "#FD971F" :weight bold))))
  '(vc-annotate-background nil)
- '(vc-annotate-color-map (quote ((20 . "#F92672") (40 . "#CF4F1F") (60 . "#C26C0F") (80 . "#E6DB74") (100 . "#AB8C00") (120 . "#A18F00") (140 . "#989200") (160 . "#8E9500") (180 . "#A6E22E") (200 . "#729A1E") (220 . "#609C3C") (240 . "#4E9D5B") (260 . "#3C9F79") (280 . "#A1EFE4") (300 . "#299BA6") (320 . "#2896B5") (340 . "#2790C3") (360 . "#66D9EF"))))
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
  '(vc-annotate-very-old-color nil)
- '(weechat-color-list (quote (unspecified "#272822" "#49483E" "#A20C41" "#F92672" "#67930F" "#A6E22E" "#968B26" "#E6DB74" "#21889B" "#66D9EF" "#A41F99" "#FD5FF0" "#349B8D" "#A1EFE4" "#F8F8F2" "#F8F8F0"))))
+ '(weechat-color-list
+   (quote
+    (unspecified "#272822" "#49483E" "#A20C41" "#F92672" "#67930F" "#A6E22E" "#968B26" "#E6DB74" "#21889B" "#66D9EF" "#A41F99" "#FD5FF0" "#349B8D" "#A1EFE4" "#F8F8F2" "#F8F8F0"))))
 (global-set-key "\C-cn" 'org-capture)
 
 (setq org-todo-keywords
@@ -650,7 +709,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (setq org-src-fontify-natively t)
 
 ;; Someone says it is not necessary to do the `require' and also shouldn't
-(require 'org-latex)
+;; (require 'org-latex)
+(require 'ox-latex)
 
 (defun my-auto-tex-cmd ()
   "When exporting from .org with latex, automatically run latex,
@@ -791,7 +851,7 @@ unwanted space when exporting org-mode to html."
 
 (defadvice org-html-template
   (after org-html-disable-title-in-content (contents info) activate)
-  (if (string-equal (file-name-nondirectory filename) "index.org")
+  (if (string-equal (file-name-nondirectory buffer-file-name) "index.org")
       (setq ad-return-value
 	    (replace-regexp-in-string "<h1 class=\"title\">.*\n" "" ad-return-value))))
 
@@ -813,9 +873,9 @@ unwanted space when exporting org-mode to html."
 (setq org-publish-project-alist
       '(
 	("org-blog"
-	 :base-directory "~/Dropbox/notes/org-blog/"
+	 :base-directory "~/Documents/Dropbox/notes/org-blog/"
 	 :base-extension "org"
-	 :publishing-directory "~/zion/org-blog/"
+	 :publishing-directory "~/p/org-blog/"
 	 :recursive t
 	 :publishing-function org-html-publish-to-html
          :headline-levels 4               ; Just the default for this project.
@@ -907,24 +967,38 @@ unwanted space when exporting org-mode to html."
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (defun my-c-style-hook ()
-  (let ((filename (buffer-file-name)))
+  (let ((filename (buffer-file-name))
+	(google-c-lineup-expression-plus-8
+	 (lambda (langelem)
+	   (save-excursion
+	     (back-to-indentation)
+	     ;; Go to beginning of *previous* line:
+	     (c-backward-syntactic-ws)
+	     (back-to-indentation)
+	     ;; We are making a reasonable assumption that if there is a control
+	     ;; structure to indent past, it has to be at the beginning of the line.
+	     (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
+		 (goto-char (match-end 1)))
+	     (vector (+ 8 (current-column))))))
+	(google-c-lineup-expression-plus-0
+	 (lambda (langelem)
+	   (save-excursion
+	     (back-to-indentation)
+	     ;; Go to beginning of *previous* line:
+	     (c-backward-syntactic-ws)
+	     (back-to-indentation)
+	     ;; We are making a reasonable assumption that if there is a control
+	     ;; structure to indent past, it has to be at the beginning of the line.
+	     (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
+		 (goto-char (match-end 1)))
+	     (vector (current-column))))))
     ;; Enable kernel mode for the appropriate files
     (when (and filename
 	       (string-match "drreplay"
 			     (expand-file-name filename)))
       (setq comment-start "//"
 	    comment-end   "")
-      (defun google-c-lineup-expression-plus-8 (langelem)
-	(save-excursion
-	  (back-to-indentation)
-	  ;; Go to beginning of *previous* line:
-	  (c-backward-syntactic-ws)
-	  (back-to-indentation)
-	  ;; We are making a reasonable assumption that if there is a control
-	  ;; structure to indent past, it has to be at the beginning of the line.
-	  (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
-	      (goto-char (match-end 1)))
-	  (vector (+ 8 (current-column)))))
+      
       (c-set-offset 'arglist-intro
 		    'google-c-lineup-expression-plus-8)
       (c-set-offset 'arglist-cont-nonempty
@@ -934,31 +1008,70 @@ unwanted space when exporting org-mode to html."
 				 (expand-file-name filename))
 		   (string-match "yparse"
 				 (expand-file-name filename))))
-      (defun google-c-lineup-expression-plus-8 (langelem)
-	(save-excursion
-	  (back-to-indentation)
-	  ;; Go to beginning of *previous* line:
-	  (c-backward-syntactic-ws)
-	  (back-to-indentation)
-	  ;; We are making a reasonable assumption that if there is a control
-	  ;; structure to indent past, it has to be at the beginning of the line.
-	  (if (looking-at "\\(\\(if\\|for\\|while\\)\\s *(\\)")
-	      (goto-char (match-end 1)))
-	  (vector (+ 8 (current-column)))))
       (setq c-basic-offset 4)
       (c-set-offset 'arglist-intro
 		    'google-c-lineup-expression-plus-8)
       (c-set-offset 'arglist-cont-nonempty
-		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 8))))))
+		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 8))))
+    (when (and filename
+	       (or ;; (string-match "linux"
+		   ;; 	     (expand-file-name filename))
+      (setq indent-tabs-mode t)
+      (setq c-indentation-style "linux")
+      (setq c-basic-offset 8)
+      ;; (c-set-offset 'arglist-intro
+      ;; 		    'google-c-lineup-expression-plus-4)
+      (c-set-offset 'arglist-cont-nonempty 8)
+      		    ;; 'google-c-lineup-expression-plus-4)
+      ;; 		    '(c-lineup-gcc-asm-reg (c-lineup-argcont 0)))
+      ;; (c-set-offset 'statement-cont 8)
+      )))))
+
 (add-hook 'c-mode-hook 'my-c-style-hook)
 (add-hook 'c++-mode-hook 'my-c-style-hook)
 
+;; Linux Kernel Coding Style
+(defun c-lineup-arglist-tabs-only (ignored)
+  "Line up argument lists by tabs, not spaces"
+  (let* ((anchor (c-langelem-pos c-syntactic-element))
+	 (column (c-langelem-2nd-pos c-syntactic-element))
+	 (offset (- (1+ column) anchor))
+	 (steps (floor offset c-basic-offset)))
+    (* (max steps 1)
+       c-basic-offset)))
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            ;; Add kernel style
+            (c-add-style
+             "linux-tabs-only"
+             '("linux" (c-offsets-alist
+                        (arglist-cont-nonempty
+                         c-lineup-gcc-asm-reg
+                         c-lineup-arglist-tabs-only))))))
+
+(add-hook 'c-mode-hook
+          (lambda ()
+            (let ((filename (buffer-file-name)))
+              ;; Enable kernel mode for the appropriate files
+              (when (and filename
+			 (or
+			  (string-match "linux"
+					(expand-file-name filename))
+			  (string-match "lxch"
+					(expand-file-name filename))
+			  (string-match "dpdk"
+					(expand-file-name filename))
+			  (string-match "pkt-chan"
+					(expand-file-name filename))))
+                (setq indent-tabs-mode t)
+                (c-set-style "linux-tabs-only")))))
 
 ;; highlight fixme
-;; (add-hook 'c-mode-common-hook
-;;                (lambda ()
-;;                 (font-lock-add-keywords nil
-;;                  '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))))
+(add-hook 'tex-mode-hook
+	  (lambda ()
+	    (font-lock-add-keywords nil
+				    '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))))
 
 ;; (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
@@ -968,7 +1081,6 @@ unwanted space when exporting org-mode to html."
 ;; 	     (setq c-basic-offset 4)
 ;; 	     (setq indent-tabs-mode nil)))
 
-;; Linux Kernel Coding Style
 ;; (defun c-lineup-arglist-tabs-only (ignored)
 ;;   "Line up argument lists by tabs, not spaces"
 ;;   (let* ((anchor (c-langelem-pos c-syntactic-element))
@@ -1005,35 +1117,6 @@ unwanted space when exporting org-mode to html."
 ;; test existence and state of server
 ;; (and (boundp 'server-process)
 ;;      (memq (process-status server-process) '(connect listen open run)))
-
-;; (add-hook 'c-mode-common-hook
-;;           (lambda ()
-;;             ;; Add kernel style
-;;             (c-add-style
-;;              "linux-tabs-only"
-;;              '("linux" (c-offsets-alist
-;;                         (arglist-cont-nonempty
-;;                          c-lineup-gcc-asm-reg
-;;                          c-lineup-arglist-tabs-only))))))
-
-;; (add-hook 'c-mode-hook
-;;           (lambda ()
-;;             (let ((filename (buffer-file-name)))
-;;               ;; Enable kernel mode for the appropriate files
-;;               (when (and filename
-;;                          (string-match (expand-file-name "~/asgard/summerpj")
-;;                                        filename))
-;;                 (setq indent-tabs-mode t)
-;;                 (c-set-style "linux-tabs-only")))))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(variable-pitch ((t (:family "Lucida Grande")))))
-
-
 
 ;;; ** Literature
 (defun dired-literature-create-directory-from-pdf ()
@@ -1109,8 +1192,9 @@ unwanted space when exporting org-mode to html."
 ;; 	       ;; minor-mode-alist  ;; list of minor modes
 ;; 	       "%-" ;; fill with '-'
 ;; 	       ))
+(set-face-attribute 'mode-line nil :box nil)
+(set-face-attribute 'mode-line-inactive nil :box nil)
 ;; (when window-system
 ;;   (load-theme 'yamonokai t))
 (load-theme 'monokai t)
-(set-face-attribute 'mode-line nil :box nil)
-(set-face-attribute 'mode-line-inactive nil :box nil)
+;; (Load-theme 'solarized-dark t)
