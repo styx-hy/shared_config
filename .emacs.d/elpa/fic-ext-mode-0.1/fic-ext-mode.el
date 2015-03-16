@@ -46,7 +46,7 @@
   :group 'font-lock
   :group 'faces)
 
-(defcustom fic-highlighted-words '("FIXME" "TODO" "BUG" "REDFLAG")
+(defcustom fic-highlighted-words '("FIXME" "TODO" "BUG" "REDFLAG" "XXX" "xxx")
   "Words to highlight"
   :group 'fic-ext-mode)
 

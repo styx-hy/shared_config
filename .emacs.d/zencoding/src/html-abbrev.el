@@ -1,6 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; XML abbrev
 
+(zencoding-defparameter
+ zencoding-tag-aliases-table
+ (gethash "aliases" (gethash "html" zencoding-snippets)))
+
 (defun zencoding-expr (input)
   "Parse a zen coding expression with optional filters."
   (zencoding-pif (zencoding-parse "\\(.*?\\)|" 2 "expr|filter" it)
@@ -138,22 +142,65 @@
 
 (defun zencoding-tag (input)
   "Parse a tag."
-  (zencoding-run zencoding-tagname
-                 (let ((tagname (cadr expr))
-                       (has-body? (cddr expr)))
-                   (zencoding-pif (zencoding-run zencoding-identifier
-                                                 (zencoding-tag-classes
-                                                  `(tag (,tagname ,has-body? ,(cddr expr))) input)
-                                                 (zencoding-tag-classes
-                                                  `(tag (,tagname ,has-body? nil)) input))
-                                  (let ((tag-data (cadar it)) (input (cdr it)))
-                                    (zencoding-pif (zencoding-run zencoding-props
-                                                                  (let ((props (cdr expr)))
-                                                                    `((tag ,(append tag-data (list props))) . ,input))
-                                                                  `((tag ,(append tag-data '(nil))) . ,input))
-                                                   (let ((expr (car it)) (input (cdr it)))
-                                                     (zencoding-tag-text expr input))))))
-                 (zencoding-default-tag input)))
+  (zencoding-run
+   zencoding-tagname
+   (let ((tagname (cadr expr))
+         (has-body? (cddr expr)))
+     (zencoding-pif
+      (zencoding-run zencoding-identifier
+                     (zencoding-tag-classes
+                      `(tag (,tagname ,has-body? ,(cddr expr))) input)
+                     (zencoding-tag-classes
+                      `(tag (,tagname ,has-body? nil)) input))
+      (let ((tag-data (cadar it)) (input (cdr it)))
+        (zencoding-pif (zencoding-run
+                        zencoding-props
+                        (let ((props (cdr expr)))
+                          `((tag ,(append tag-data (list props))) . ,input))
+                        `((tag ,(append tag-data '(nil))) . ,input))
+                       (let ((expr (car it)) (input (cdr it)))
+                         (destructuring-bind (expr . input)
+                             (zencoding-tag-text expr input)
+                           (zencoding-expand-tag-alias expr input)))))))
+   (zencoding-default-tag input)))
+
+(defun zencoding-get-first-tag (expr)
+  (if (listp expr)
+      (if (listp (car expr))
+          (zencoding-get-first-tag (car expr))
+        (if (eql (car expr) 'tag)
+            expr
+          (zencoding-get-first-tag (cdr expr))))
+    nil))
+
+(defun zencoding-expand-tag-alias (tag input)
+  (let ((tag-data (cadr tag)))
+    (let ((tag-name (car tag-data)))
+      (zencoding-aif
+       (gethash tag-name zencoding-tag-aliases-table)
+       (let ((expr (if (stringp it)
+                       (zencoding-subexpr it)
+                     it)))
+         (prog1
+             (let ((rt (copy-tree expr)))
+               (let ((first-tag-data (cadr (zencoding-get-first-tag rt))))
+                 (setf (second first-tag-data) (second tag-data))
+                 (setf (third first-tag-data)  (third tag-data))
+                 (setf (fourth first-tag-data)
+                       (remove-duplicates
+                        (append (fourth first-tag-data)
+                                (fourth tag-data)) :test #'string=))
+                 (setf (fifth first-tag-data)
+                       (remove-duplicates
+                        (append (fifth first-tag-data)
+                                (fifth tag-data))
+                        :test #'(lambda (p1 p2)
+                                  (eql (car p1) (car p2)))))
+                 (setf (sixth first-tag-data) (sixth tag-data))
+                 (setf (cdr rt) (concat (cdr rt) input))
+                 rt))
+           (puthash tag-name expr zencoding-tag-aliases-table)))
+       `(,tag . ,input)))))
 
 (defun zencoding-default-tag (input)
   "Parse a #id or .class"
@@ -198,7 +245,7 @@
                                         (input (elt it 2)))
                                     `((,(read name) ,value) . ,input)))
                  it
-                 (zencoding-parse "=\\([^\\,\\+\\>\\ )]*\\)" 2
+                 (zencoding-parse "=\\([^\\,\\+\\>\\{\\}\\ )]*\\)" 2
                                   "=property value"
                                   (let ((value (elt it 1))
                                         (input (elt it 2)))
@@ -214,7 +261,7 @@
 
 (defun zencoding-tagname (input)
   "Parse a tagname a-zA-Z0-9 tagname (e.g. html/head/xsl:if/br)."
-  (zencoding-parse "\\([a-zA-Z][a-zA-Z0-9:$@-]*\/?\\)" 2 "tagname, a-zA-Z0-9"
+  (zencoding-parse "\\([a-zA-Z!][a-zA-Z0-9:!$@-]*\/?\\)" 2 "tagname, a-zA-Z0-9"
                    (let* ((tag-spec (elt it 1))
                           (empty-tag (zencoding-regex "\\([^\/]*\\)\/" tag-spec 1))
                           (tag (zencoding-split-numbering-expressions
@@ -295,30 +342,25 @@
   "Parse an e+e expression, where e is an tag or a pexpr."
   (zencoding-run zencoding-sibling
                  (let ((parent expr))
-                   (zencoding-parse "\\+" 1 "+"
-                                    (zencoding-run zencoding-subexpr
-                                                   (let ((child expr))
-                                                     `((sibling ,parent ,child) . ,input))
-                                                   (zencoding-expand parent input))))
+                   (zencoding-parse
+                    "\\+" 1 "+"
+                    (zencoding-run
+                     zencoding-subexpr
+                     (let ((child expr))
+                       `((sibling ,parent ,child) . ,input))
+                     (zencoding-expand parent input))))
                  '(error "expected first sibling")))
-
-(defvar zencoding-expandable-tags
-  '("dl"    ">(dt+dd)"
-    "ol"    ">li"
-    "ul"    ">li"
-    "table" ">tr>td"))
 
 (defun zencoding-expand (parent input)
   "Parse an e+ expression, where e is an expandable tag"
-  (let* ((parent-tag (car (elt parent 1)))
-         (expandable (member parent-tag zencoding-expandable-tags)))
-    (if expandable
-        (let ((expansion (zencoding-child parent (concat (cadr expandable)))))
-          (zencoding-pif (zencoding-parse "+\\(.*\\)" 1 "+expr"
-                                          (zencoding-subexpr (elt it 1)))
-                         `((sibling ,(car expansion) ,(car it)))
-                         expansion))
-      '(error "expected second sibling"))))
+  (let* ((parent-tag (car (cadr parent))))
+    (setf (caadr parent) (concat parent-tag "+"))
+    (destructuring-bind (parent . input)
+        (zencoding-expand-tag-alias parent input)
+      (zencoding-pif (zencoding-parse "+\\(.*\\)" 1 "+expr"
+                                      (zencoding-subexpr (elt it 1)))
+                     `((sibling ,parent ,@it))
+                     `(,parent . ,input)))))
 
 (defun zencoding-name (input)
   "Parse a class or identifier name, e.g. news, footer, mainimage"
@@ -349,61 +391,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Zen coding transformer from AST to string
 
-(defvar zencoding-inline-tags
-  '("a"
-    "abbr"
-    "acronym"
-    "cite"
-    "code"
-    "dd"
-    "dfn"
-    "dt"
-    "em"
-    "h1" "h2" "h3" "h4" "h5" "h6"
-    "kbd"
-    "li"
-    "q"
-    "span"
-    "strong"
-    "var"
-    "textarea"
-    "small"
-    "time" "del" "ins"
-    "sub"
-    "sup"
-    "i" "s" "b"
-    "ruby" "rt" "rp"
-    "bdo"
-    "iframe" "canvas"
-    "audio" "video"
-    "ovject" "embed"
-    "map"))
-
-(defvar zencoding-block-tags
-  '("p"
-    "article"
-    "section"
-    "aside"
-    "nav"
-    "figure"
-    "address"
-    "header"
-    "footer"))
-
-(defvar zencoding-self-closing-tags
-  '("br"
-    "img"
-    "input"
-    "wbr"
-    "object"
-    "source"
-    "area"
-    "param"
-    "option"))
-
 (defvar zencoding-leaf-function nil
   "Function to execute when expanding a leaf node in the
   Zencoding AST.")
+
+(zencoding-defparameter
+ zencoding-tag-settings-table
+ (gethash "tags" (gethash "html" zencoding-preferences)))
+
+(zencoding-defparameter
+ zencoding-tag-snippets-table
+ (gethash "snippets" (gethash "html" zencoding-snippets)))
 
 (defvar zencoding-filters
   '("html" (zencoding-primary-filter zencoding-make-html-tag)
@@ -440,43 +438,106 @@
          (classes   (pop tag-info))
          (props     (pop tag-info))
          (txt       (pop tag-info))
-         (self-closing? (not (or txt content
-                                 (and has-body?
-                                      (not (member name zencoding-self-closing-tags)))))))
-    (funcall tag-maker name id classes props txt self-closing?
+         (settings  (gethash name zencoding-tag-settings-table)))
+    (funcall tag-maker name has-body? id classes props txt settings
              (if content content
                (if zencoding-leaf-function (funcall zencoding-leaf-function))))))
 
-(defun zencoding-make-html-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
-  "Create HTML markup string"
-  (let* ((id      (zencoding-concat-or-empty " id=\"" tag-id "\""))
-         (classes (zencoding-mapconcat-or-empty " class=\"" tag-classes " " "\""))
-         (props   (zencoding-mapconcat-or-empty " " tag-props " " nil
-                                                (lambda (prop)
-                                                  (concat (symbol-name (car prop)) "=\"" (cadr prop) "\""))))
-         (content-multiline? (and content (string-match "\n" content)))
-         (block-tag? (or (member tag-name zencoding-block-tags)
-                         (and (> (length tag-name) 1)
-                              (not (member tag-name zencoding-inline-tags)))))
-         (lf (if (or content-multiline? block-tag?)
-                 "\n")))
-    (concat "<" tag-name id classes props (if self-closing?
-                                              "/>"
-                                            (concat ">"
-                                                    (if tag-txt
-                                                        (if (or content-multiline? block-tag?)
-                                                            (zencoding-indent tag-txt)
-                                                          tag-txt))
-                                                    (if content
-                                                        (if (or content-multiline? block-tag?)
-                                                            (zencoding-indent content)
-                                                          content))
-                                                    lf
-                                                    "</" tag-name ">")))))
+(defun zencoding-hash-to-list (hash &optional proc)
+  (unless proc (setq proc #'cons))
+  (loop for key being the hash-keys of hash using (hash-values val)
+        collect (funcall proc key val)))
 
-(defun zencoding-make-commented-html-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-merge-tag-props (default-table tag-props)
+  (if default-table
+      (let ((tbl (copy-hash-table default-table)))
+        (loop for prop in tag-props do
+              (puthash (symbol-name (car prop)) (cadr prop) tbl))
+        (zencoding-hash-to-list tbl 'list))
+    tag-props))
+
+(defun zencoding-html-snippets-instantiate-lambda (src)
+  (let ((lines (mapcar
+                #'(lambda (src)
+                    (if (string-match "^\\(.*\\)${child}\\(.*\\)$" src)
+                        (mapcar (lambda (i)
+                                  (match-string i src))
+                                '(1 2))
+                      (list src)))
+                (split-string src "\n"))))
+    (labels
+        ((iter
+          (l m a b)
+          (if l
+              (if (< 1 (length (car l)))
+                  (iter (cdr l)
+                        'b
+                        (cons (caar l)  a)
+                        (cons (cadar l) b))
+                (if (eql m 'a)
+                    (iter (cdr l) m (cons (caar l) a) b)
+                  (iter (cdr l) m a (cons (caar l) b))))
+            (if b
+                `(lambda (contents)
+                   (concat
+                    ,(zencoding-join-string (reverse a) "\n")
+                    contents
+                    ,(zencoding-join-string (reverse b) "\n")))
+              `(lambda (contents)
+                 (concat
+                  ,(zencoding-join-string (reverse a) "\n")
+                  contents))))))
+      (eval (iter lines 'a nil nil)))))
+
+(defun zencoding-make-html-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
+  "Create HTML markup string"
+  (zencoding-aif
+   (gethash tag-name zencoding-tag-snippets-table)
+
+   (let ((fn (if (stringp it)
+                 (zencoding-html-snippets-instantiate-lambda it)
+               it)))
+     (prog1
+         (funcall fn content)
+       (puthash tag-name fn zencoding-tag-snippets-table)))
+
+   (let* ((id           (zencoding-concat-or-empty " id=\"" tag-id "\""))
+          (classes      (zencoding-mapconcat-or-empty " class=\"" tag-classes " " "\""))
+          (props        (let* ((tag-props-default
+                                (and settings (gethash "defaultAttr" settings)))
+                               (merged-tag-props
+                                (zencoding-merge-tag-props
+                                 tag-props-default
+                                 tag-props)))
+                          (zencoding-mapconcat-or-empty
+                           " " merged-tag-props " " nil
+                           (lambda (prop)
+                             (let ((key (car prop)))
+                               (concat (if (symbolp key) (symbol-name key) key)
+                                       "=\"" (cadr prop) "\""))))))
+          (content-multiline? (and content (string-match "\n" content)))
+          (block-tag?         (and settings (gethash "block" settings)))
+          (self-closing?      (and (not (or tag-txt content))
+                                   (or (not tag-has-body?)
+                                       (and settings (gethash "selfClosing" settings)))))
+          (lf                 (if (or content-multiline? block-tag?) "\n")))
+     (concat "<" tag-name id classes props
+             (if self-closing? "/>"
+               (concat ">"
+                       (if tag-txt
+                           (if (or content-multiline? block-tag?)
+                               (zencoding-indent tag-txt)
+                             tag-txt))
+                       (if content
+                           (if (or content-multiline? block-tag?)
+                               (zencoding-indent content)
+                             content))
+                       lf
+                       "</" tag-name ">"))))))
+
+(defun zencoding-make-commented-html-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create HTML markup string with extra comments for elements with #id or .classes"
-  (let ((body (zencoding-make-html-tag tag-name tag-id tag-classes tag-props tag-txt self-closing? content)))
+  (let ((body (zencoding-make-html-tag tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)))
     (if (or tag-id tag-classes)
         (let ((id      (zencoding-concat-or-empty "#" tag-id))
               (classes (zencoding-mapconcat-or-empty "." tag-classes ".")))
@@ -485,7 +546,7 @@
                   "\n<!-- /" id classes " -->"))
       body)))
 
-(defun zencoding-make-haml-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-make-haml-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create HAML string"
   (let ((name    (if (and (equal tag-name "div")
                           (or tag-id tag-classes))
@@ -493,26 +554,26 @@
                    (concat "%" tag-name)))
         (id      (zencoding-concat-or-empty "#" tag-id))
         (classes (zencoding-mapconcat-or-empty "." tag-classes "."))
-        (props   (zencoding-mapconcat-or-empty "{" tag-props ", " "}"
-                                               (lambda (prop)
-                                                 (concat ":" (symbol-name (car prop)) " => \"" (cadr prop) "\"")))))
+        (props   (zencoding-mapconcat-or-empty
+                  "{" tag-props ", " "}"
+                  (lambda (prop)
+                    (concat ":" (symbol-name (car prop)) " => \"" (cadr prop) "\"")))))
     (concat name id classes props
             (if tag-txt
                 (zencoding-indent tag-txt))
             (if content
                 (zencoding-indent content)))))
 
-(defun zencoding-make-hiccup-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-make-hiccup-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create Hiccup string"
   (let* ((id      (zencoding-concat-or-empty "#" tag-id))
          (classes (zencoding-mapconcat-or-empty "." tag-classes "."))
-         (props   (zencoding-mapconcat-or-empty " {" tag-props ", " "}"
-                                                (lambda (prop)
-                                                  (concat ":" (symbol-name (car prop)) " \"" (cadr prop) "\""))))
+         (props   (zencoding-mapconcat-or-empty
+                   " {" tag-props ", " "}"
+                   (lambda (prop)
+                     (concat ":" (symbol-name (car prop)) " \"" (cadr prop) "\""))))
          (content-multiline? (and content (string-match "\n" content)))
-         (block-tag? (or (member tag-name zencoding-block-tags)
-                         (and (> (length tag-name) 1)
-                              (not (member tag-name zencoding-inline-tags))))))
+         (block-tag? (and settings (gethash "block" settings))))
     (concat "[:" tag-name id classes props
             (if tag-txt
                 (let ((tag-txt-quoted (concat "\"" tag-txt "\"")))

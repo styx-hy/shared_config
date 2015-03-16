@@ -1,0 +1,183 @@
+;; Object styx/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "styx/"
+  :tables (list 
+   (semanticdb-table "zookld.c"
+    :major-mode 'c-mode
+    :tags 
+        '( ("openssl/conf.h" include (:system-flag t) nil [34 59])
+            ("sys/param.h" include (:system-flag t) nil [60 82])
+            ("sys/types.h" include (:system-flag t) nil [83 105])
+            ("sys/socket.h" include (:system-flag t) nil [106 129])
+            ("sys/wait.h" include (:system-flag t) nil [130 151])
+            ("err.h" include (:system-flag t) nil [152 168])
+            ("grp.h" include (:system-flag t) nil [169 185])
+            ("fcntl.h" include (:system-flag t) nil [186 204])
+            ("netdb.h" include (:system-flag t) nil [205 223])
+            ("unistd.h" include (:system-flag t) nil [224 243])
+            ("signal.h" include (:system-flag t) nil [244 263])
+            ("string.h" include (:system-flag t) nil [264 283])
+            ("http.h" include nil nil [284 301])
+            ("ZOOK_CONF" variable (:constant-flag t) nil [311 320])
+            ("MAX_SERVICES" variable (:constant-flag t) nil [344 356])
+            ("MAX_GIDS" variable (:constant-flag t) nil [369 377])
+            ("svcfds" variable
+               (:dereference 1
+                :typemodifiers ("static")
+                :type "int")
+                nil [387 419])
+            ("svcnames" variable
+               (:dereference 2
+                :typemodifiers ("static")
+                :type "char")
+                nil [420 460])
+            ("nsvcs" variable
+               (:typemodifiers ("static")
+                :type "int")
+                nil [461 482])
+            ("ngids" variable
+               (:typemodifiers ("static")
+                :type "int")
+                nil [516 537])
+            ("gids" variable
+               (:dereference 1
+                :typemodifiers ("static")
+                :type ("gid_t" type (:type "class") nil nil))
+                nil [538 566])
+            ("service_parse_cb" function
+               (:prototype-flag t
+                :typemodifiers ("static")
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [596 609])
+                    ("" variable (:type "int") (reparse-symbol arg-sub-list) [610 614])
+                    ("" variable
+                       (:pointer 1
+                        :type "void")
+                        (reparse-symbol arg-sub-list) [615 622]))                  
+                :type "int")
+                nil [568 623])
+            ("group_parse_cb" function
+               (:prototype-flag t
+                :typemodifiers ("static")
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [650 663])
+                    ("" variable (:type "int") (reparse-symbol arg-sub-list) [664 668])
+                    ("" variable
+                       (:pointer 1
+                        :type "void")
+                        (reparse-symbol arg-sub-list) [669 676]))                  
+                :type "int")
+                nil [624 677])
+            ("launch_svc" function
+               (:prototype-flag t
+                :typemodifiers ("static")
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :type ("CONF" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [702 709])
+                    ("" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [710 723]))                  
+                :type ("pid_t" type (:type "class") nil nil))
+                nil [678 724])
+            ("start_server" function
+               (:prototype-flag t
+                :typemodifiers ("static")
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [749 762]))                  
+                :type "int")
+                nil [725 763])
+            ("main" function
+               (:arguments 
+                  ( ("argc" variable (:type "int") (reparse-symbol arg-sub-list) [774 783])
+                    ("argv" variable
+                       (:pointer 2
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [784 796]))                  
+                :type "int")
+                nil [765 2591])
+            ("launch_svc" function
+               (:arguments 
+                  ( ("conf" variable
+                       (:pointer 1
+                        :type ("CONF" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2633 2644])
+                    ("name" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2645 2662]))                  
+                :type ("pid_t" type (:type "class") nil nil))
+                nil [2616 4838])
+            ("service_parse_cb" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("name" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [4868 4885])
+                    ("len" variable (:type "int") (reparse-symbol arg-sub-list) [4886 4894])
+                    ("arg" variable
+                       (:pointer 1
+                        :type "void")
+                        (reparse-symbol arg-sub-list) [4895 4905]))                  
+                :type "int")
+                nil [4840 5081])
+            ("group_parse_cb" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("gid_str" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [5109 5129])
+                    ("len" variable (:type "int") (reparse-symbol arg-sub-list) [5130 5138])
+                    ("arg" variable
+                       (:pointer 1
+                        :type "void")
+                        (reparse-symbol arg-sub-list) [5139 5149]))                  
+                :type "int")
+                nil [5083 5477])
+            ("start_server" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("portstr" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [5534 5554]))                  
+                :type "int")
+                nil [5510 6305]))          
+    :file "zookld.c"
+    :pointmax 6306
+    :fsize 6305
+    :lastmodtime '(20797 42149 0 0)
+    :unmatched-syntax 'nil
+    :lexical-table 
+        '(("MAX_SERVICES" . ((number "256" 357 . 360)))
+          ("ZOOK_CONF" . ((string "\"zook.conf\"" 324 . 335)))
+          ("MAX_GIDS" . ((number "256" 382 . 385)))
+          )
+
+    )
+   )
+  :file "!Users!styx!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2"
+  )

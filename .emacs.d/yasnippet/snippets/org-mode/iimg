@@ -2,6 +2,6 @@
 # contributor: Yang Hong <hy.styx@gmail.com>
 # key: iimg
 # --
-#+caption: ${1:caption for the image}
-#+name: ${2:image name}
+#+CAPTION: ${1:caption for the image}
+#+NAME: ${2:image name}
 [[$0]]

@@ -1,0 +1,600 @@
+;; Object openssl/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "openssl/"
+  :tables (list 
+   (semanticdb-table "conf.h"
+    :major-mode 'c-mode
+    :tags 
+        '( ("HEADER_CONF_H" variable (:constant-flag t) nil [3227 3240])
+            ("AvailabilityMacros.h" include (:system-flag t) nil [3242 3273])
+            ("openssl/bio.h" include (:system-flag t) nil [3275 3299])
+            ("openssl/lhash.h" include (:system-flag t) nil [3300 3326])
+            ("openssl/stack.h" include (:system-flag t) nil [3327 3353])
+            ("openssl/safestack.h" include (:system-flag t) nil [3354 3384])
+            ("openssl/e_os2.h" include (:system-flag t) nil [3385 3411])
+            ("openssl/ossl_typ.h" include (:system-flag t) nil [3413 3442])
+            ("CONF_VALUE" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "typedef"
+                :typedef ("" type
+                     (:members 
+                        ( ("section" variable
+                             (:pointer 1
+                              :type "char")
+                              (reparse-symbol classsubparts) [3504 3518])
+                          ("name" variable
+                             (:pointer 1
+                              :type "char")
+                              (reparse-symbol classsubparts) [3520 3531])
+                          ("value" variable
+                             (:pointer 1
+                              :type "char")
+                              (reparse-symbol classsubparts) [3533 3545]))                        
+                      :type "struct")
+                      nil nil))
+                (reparse-symbol extern-c-contents) [3485 3560])
+            ("conf_st" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "struct"
+                :prototype t)
+                (reparse-symbol extern-c-contents) [3653 3668])
+            ("conf_method_st" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "struct"
+                :prototype t)
+                (reparse-symbol extern-c-contents) [3669 3691])
+            ("CONF_METHOD" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "typedef"
+                :superclasses "conf_method_st"
+                :typedef ("conf_method_st" type
+                     (:prototype t
+                      :type "struct")
+                      nil nil))
+                (reparse-symbol extern-c-contents) [3692 3734])
+            ("conf_method_st" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "struct"
+                :members 
+                  ( ("name" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol classsubparts) [3762 3779])
+                    ("create" variable
+                       (:functionpointer-flag t
+                        :type ("CONF" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [3781 3816])
+                    ("init" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [3818 3842])
+                    ("destroy" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [3844 3871])
+                    ("destroy_data" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [3873 3905])
+                    ("load_bio" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [3907 3957])
+                    ("dump" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [3959 3998])
+                    ("is_number" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [4000 4043])
+                    ("to_int" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [4045 4085])
+                    ("load" variable
+                       (:functionpointer-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [4087 4142]))                  )
+                (reparse-symbol extern-c-contents) [3736 4146])
+            ("CONF_IMODULE" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "typedef"
+                :superclasses "conf_imodule_st"
+                :typedef ("conf_imodule_st" type
+                     (:prototype t
+                      :type "struct")
+                      nil nil))
+                (reparse-symbol extern-c-contents) [4174 4218])
+            ("CONF_MODULE" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "typedef"
+                :superclasses "conf_module_st"
+                :typedef ("conf_module_st" type
+                     (:prototype t
+                      :type "struct")
+                      nil nil))
+                (reparse-symbol extern-c-contents) [4219 4261])
+            ("conf_init_func" function
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int"
+                :arguments 
+                  ( ("md" variable
+                       (:pointer 1
+                        :type ("CONF_IMODULE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4325 4342])
+                    ("cnf" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type ("CONF" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4343 4359]))                  
+                :prototype-flag t)
+                (reparse-symbol extern-c-contents) [4306 4360])
+            ("conf_finish_func" function
+               (:typemodifiers ("extern" "\"C\"")
+                :type "void"
+                :arguments 
+                  ( ("md" variable
+                       (:pointer 1
+                        :type ("CONF_IMODULE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4391 4408]))                  
+                :prototype-flag t)
+                (reparse-symbol extern-c-contents) [4369 4409])
+            ("CONF_MFLAGS_IGNORE_ERRORS" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4419 4444])
+            ("CONF_MFLAGS_IGNORE_RETURN_CODES" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4457 4488])
+            ("CONF_MFLAGS_SILENT" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4501 4519])
+            ("CONF_MFLAGS_NO_DSO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4533 4551])
+            ("CONF_MFLAGS_IGNORE_MISSING_FILE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4565 4596])
+            ("CONF_MFLAGS_DEFAULT_SECTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [4610 4637])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [4691 4737])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [4782 4828])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [4888 4934])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5016 5062])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5125 5171])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5244 5290])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5361 5407])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5477 5523])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5552 5598])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5640 5686])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5728 5774])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5821 5867])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [5897 5943])
+            ("conf_st" type
+               (:typemodifiers ("extern" "\"C\"")
+                :type "struct"
+                :members 
+                  ( ("meth" variable
+                       (:pointer 1
+                        :type ("CONF_METHOD" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [6114 6132])
+                    ("meth_data" variable
+                       (:pointer 1
+                        :type "void")
+                        (reparse-symbol classsubparts) [6134 6150])
+                    ("data" variable
+                       (:pointer 1
+                        :type ("LHASH" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [6152 6164]))                  )
+                (reparse-symbol extern-c-contents) [6095 6168])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6205 6251])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6285 6331])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6363 6409])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6535 6581])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6615 6661])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6719 6765])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6844 6890])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [6950 6996])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7075 7121])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7198 7244])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7344 7390])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7438 7484])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7532 7578])
+            ("NCONF_get_number" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [7790 7806])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [7967 8013])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8111 8157])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8192 8238])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8270 8316])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8346 8392])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8485 8531])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8591 8637])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8697 8743])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8800 8846])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [8912 8958])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9020 9066])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9128 9174])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9242 9288])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9339 9385])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9451 9497])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9541 9587])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9713 9759])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [9801 9847])
+            ("DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :type "int")
+                (reparse-symbol extern-c-contents) [10061 10107])
+            ("CONF_F_CONF_DUMP_FP" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10182 10201])
+            ("CONF_F_CONF_LOAD" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10218 10234])
+            ("CONF_F_CONF_LOAD_BIO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10251 10271])
+            ("CONF_F_CONF_LOAD_FP" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10288 10307])
+            ("CONF_F_CONF_MODULES_LOAD" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10324 10348])
+            ("CONF_F_DEF_LOAD" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10364 10379])
+            ("CONF_F_DEF_LOAD_BIO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10397 10416])
+            ("CONF_F_MODULE_INIT" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10433 10451])
+            ("CONF_F_MODULE_LOAD_DSO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10468 10490])
+            ("CONF_F_MODULE_RUN" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10507 10524])
+            ("CONF_F_NCONF_DUMP_BIO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10541 10562])
+            ("CONF_F_NCONF_DUMP_FP" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10579 10599])
+            ("CONF_F_NCONF_GET_NUMBER" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10616 10639])
+            ("CONF_F_NCONF_GET_NUMBER_E" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10656 10681])
+            ("CONF_F_NCONF_GET_SECTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10697 10721])
+            ("CONF_F_NCONF_GET_STRING" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10737 10760])
+            ("CONF_F_NCONF_LOAD" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10777 10794])
+            ("CONF_F_NCONF_LOAD_BIO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10811 10832])
+            ("CONF_F_NCONF_LOAD_FP" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10849 10869])
+            ("CONF_F_NCONF_NEW" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10886 10902])
+            ("CONF_F_STR_COPY" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10919 10934])
+            ("CONF_R_ERROR_LOADING_DSO" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [10973 10997])
+            ("CONF_R_MISSING_CLOSE_SQUARE_BRACKET" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11013 11048])
+            ("CONF_R_MISSING_EQUAL_SIGN" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11063 11088])
+            ("CONF_R_MISSING_FINISH_FUNCTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11104 11134])
+            ("CONF_R_MISSING_INIT_FUNCTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11150 11178])
+            ("CONF_R_MODULE_INITIALIZATION_ERROR" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11194 11228])
+            ("CONF_R_NO_CLOSE_BRACE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11243 11264])
+            ("CONF_R_NO_CONF" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11281 11295])
+            ("CONF_R_NO_CONF_OR_ENVIRONMENT_VARIABLE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11313 11351])
+            ("CONF_R_NO_SECTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11366 11383])
+            ("CONF_R_NO_SUCH_FILE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11400 11419])
+            ("CONF_R_NO_VALUE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11436 11451])
+            ("CONF_R_UNABLE_TO_CREATE_NEW_SECTION" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11469 11504])
+            ("CONF_R_UNKNOWN_MODULE_NAME" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11519 11545])
+            ("CONF_R_VARIABLE_HAS_NO_VALUE" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [11561 11589]))          
+    :file "conf.h"
+    :pointmax 11634
+    :fsize 11633
+    :lastmodtime '(20747 7667 0 0)
+    :unmatched-syntax '((semantic-list 10054 . 10060) (symbol 10033 . 10054) (VOID 10028 . 10032) (semantic-list 9794 . 9800) (symbol 9766 . 9794) (VOID 9761 . 9765) (semantic-list 9608 . 9712) (symbol 9593 . 9608) (semantic-list 9662 . 9700) (semantic-list 9652 . 9662) (INT 9589 . 9592) (semantic-list 9662 . 9700) (semantic-list 9652 . 9662) (semantic-list 9534 . 9540) (symbol 9505 . 9534) (punctuation 9504 . 9505) (CHAR 9499 . 9503) (semantic-list 9415 . 9450) (symbol 9391 . 9415) (VOID 9386 . 9390) (semantic-list 9319 . 9338) (symbol 9295 . 9319) (punctuation 9294 . 9295) (VOID 9289 . 9293) (semantic-list 9202 . 9241) (symbol 9180 . 9202) (VOID 9175 . 9179) (semantic-list 9103 . 9127) (symbol 9081 . 9103) (LONG 9076 . 9080) (UNSIGNED 9067 . 9075) (semantic-list 8995 . 9019) (symbol 8972 . 8995) (punctuation 8971 . 8972) (symbol 8959 . 8970) (semantic-list 8877 . 8911) (symbol 8852 . 8877) (VOID 8847 . 8851) (semantic-list 8775 . 8799) (symbol 8750 . 8775) (punctuation 8749 . 8750) (VOID 8744 . 8748) (semantic-list 8672 . 8696) (symbol 8650 . 8672) (punctuation 8649 . 8650) (CHAR 8644 . 8648) (CONST 8638 . 8643) (semantic-list 8566 . 8590) (symbol 8545 . 8566) (punctuation 8544 . 8545) (CHAR 8539 . 8543) (CONST 8533 . 8538) (semantic-list 8412 . 8484) (symbol 8397 . 8412) (INT 8393 . 8396) (semantic-list 8339 . 8345) (symbol 8322 . 8339) (VOID 8317 . 8321) (semantic-list 8263 . 8269) (symbol 8244 . 8263) (VOID 8239 . 8243) (semantic-list 8182 . 8191) (symbol 8163 . 8182) (VOID 8158 . 8162) (semantic-list 8040 . 8110) (symbol 8018 . 8040) (INT 8014 . 8017) (semantic-list 7899 . 7966) (symbol 7882 . 7899) (INT 7878 . 7881) (semantic-list 7503 . 7531) (symbol 7489 . 7503) (INT 7485 . 7488) (semantic-list 7408 . 7437) (symbol 7395 . 7408) (INT 7391 . 7394) (semantic-list 7267 . 7343) (symbol 7249 . 7267) (INT 7245 . 7248) (semantic-list 7144 . 7197) (symbol 7128 . 7144) (punctuation 7127 . 7128) (CHAR 7122 . 7126) (semantic-list 7036 . 7074) (symbol 7019 . 7036) (punctuation 7018 . 7019) (semantic-list 7005 . 7017) (symbol 6997 . 7005) (semantic-list 6916 . 6949) (symbol 6902 . 6916) (INT 6898 . 6901) (semantic-list 6809 . 6843) (symbol 6796 . 6809) (INT 6792 . 6795) (semantic-list 6677 . 6718) (symbol 6667 . 6677) (INT 6663 . 6666) (semantic-list 6602 . 6614) (symbol 6587 . 6602) (VOID 6582 . 6586) (semantic-list 6522 . 6534) (symbol 6512 . 6522) (VOID 6507 . 6511) (semantic-list 6356 . 6362) (symbol 6345 . 6356) (punctuation 6344 . 6345) (symbol 6332 . 6343) (semantic-list 6278 . 6284) (symbol 6265 . 6278) (punctuation 6264 . 6265) (symbol 6252 . 6263) (semantic-list 6185 . 6204) (symbol 6176 . 6185) (punctuation 6175 . 6176) (symbol 6170 . 6174) (semantic-list 5890 . 5896) (symbol 5873 . 5890) (VOID 5868 . 5872) (semantic-list 5795 . 5820) (symbol 5781 . 5795) (VOID 5776 . 5780) (semantic-list 5704 . 5727) (symbol 5691 . 5704) (INT 5687 . 5690) (semantic-list 5615 . 5639) (symbol 5603 . 5615) (INT 5599 . 5602) (semantic-list 5538 . 5551) (symbol 5529 . 5538) (VOID 5524 . 5528) (semantic-list 5428 . 5476) (symbol 5413 . 5428) (LONG 5408 . 5412) (semantic-list 5312 . 5360) (symbol 5297 . 5312) (punctuation 5296 . 5297) (CHAR 5291 . 5295) (semantic-list 5210 . 5243) (symbol 5194 . 5210) (punctuation 5193 . 5194) (semantic-list 5180 . 5192) (symbol 5172 . 5180) (semantic-list 5090 . 5124) (symbol 5077 . 5090) (punctuation 5076 . 5077) (symbol 5070 . 5075) (semantic-list 4980 . 5015) (symbol 4968 . 4980) (punctuation 4967 . 4968) (symbol 4961 . 4966) (semantic-list 4845 . 4887) (symbol 4836 . 4845) (punctuation 4835 . 4836) (symbol 4829 . 4834) (semantic-list 4757 . 4781) (symbol 4743 . 4757) (VOID 4738 . 4742) (semantic-list 4671 . 4690) (symbol 4648 . 4671) (INT 4644 . 4647) (TYPEDEF 4361 . 4368) (TYPEDEF 4298 . 4305) (semantic-list 3637 . 3651) (symbol 3621 . 3637) (semantic-list 3607 . 3620) (symbol 3591 . 3607) (semantic-list 3578 . 3590) (symbol 3562 . 3578))
+    :lexical-table 
+        '(("CONF_MFLAGS_IGNORE_ERRORS" . ((number "0x1" 4445 . 4448)))
+          ("CONF_F_DEF_LOAD_BIO" . ((number "121" 10421 . 10424)))
+          ("HEADER_CONF_H")
+          ("CONF_MFLAGS_SILENT" . ((number "0x4" 4521 . 4524)))
+          ("CONF_F_NCONF_DUMP_FP" . ((number "106" 10604 . 10607)))
+          ("CONF_F_NCONF_GET_NUMBER" . ((number "107" 10644 . 10647)))
+          ("CONF_F_NCONF_LOAD" . ((number "113" 10799 . 10802)))
+          ("CONF_R_MISSING_INIT_FUNCTION" . ((number "112" 11182 . 11185)))
+          ("CONF_R_MODULE_INITIALIZATION_ERROR" . ((number "109" 11231 . 11234)))
+          ("CONF_R_NO_SECTION" . ((number "107" 11388 . 11391)))
+          ("CONF_R_VARIABLE_HAS_NO_VALUE" . ((number "104" 11593 . 11596)))
+          ("CONF_MFLAGS_DEFAULT_SECTION" . ((number "0x20" 4638 . 4642)))
+          ("CONF_F_CONF_LOAD_BIO" . ((number "102" 10276 . 10279)))
+          ("CONF_F_DEF_LOAD" . ((number "120" 10385 . 10388)))
+          ("CONF_F_MODULE_INIT" . ((number "115" 10456 . 10459)))
+          ("CONF_R_MISSING_EQUAL_SIGN" . ((number "101" 11092 . 11095)))
+          ("CONF_R_NO_VALUE" . ((number "108" 11457 . 11460)))
+          ("CONF_MFLAGS_IGNORE_RETURN_CODES" . ((number "0x2" 4489 . 4492)))
+          ("CONF_F_MODULE_RUN" . ((number "118" 10529 . 10532)))
+          ("CONF_F_NCONF_GET_SECTION" . ((number "108" 10725 . 10728)))
+          ("CONF_MFLAGS_IGNORE_MISSING_FILE" . ((number "0x10" 4597 . 4601)))
+          ("CONF_F_CONF_LOAD_FP" . ((number "103" 10312 . 10315)))
+          ("CONF_F_NCONF_DUMP_BIO" . ((number "105" 10567 . 10570)))
+          ("CONF_F_NCONF_NEW" . ((number "111" 10907 . 10910)))
+          ("CONF_MFLAGS_NO_DSO" . ((number "0x8" 4553 . 4556)))
+          ("CONF_R_ERROR_LOADING_DSO" . ((number "110" 11001 . 11004)))
+          ("CONF_R_MISSING_CLOSE_SQUARE_BRACKET" . ((number "100" 11051 . 11054)))
+          ("CONF_R_NO_CONF" . ((number "105" 11301 . 11304)))
+          ("NCONF_get_number" (spp-arg-list ("c" "g" "n" "r") 7806 . 7815) . ((symbol "NCONF_get_number_e" 7816 . 7834) (semantic-list "(c,g,n,r)" 7834 . 7843)))
+          ("CONF_F_CONF_LOAD" . ((number "100" 10239 . 10242)))
+          ("CONF_F_STR_COPY" . ((number "101" 10940 . 10943)))
+          ("CONF_F_CONF_DUMP_FP" . ((number "104" 10206 . 10209)))
+          ("CONF_R_NO_CLOSE_BRACE" . ((number "102" 11269 . 11272)))
+          ("CONF_R_NO_SUCH_FILE" . ((number "114" 11424 . 11427)))
+          ("CONF_F_NCONF_GET_NUMBER_E" . ((number "112" 10685 . 10688)))
+          ("CONF_F_NCONF_GET_STRING" . ((number "109" 10765 . 10768)))
+          ("CONF_F_NCONF_LOAD_BIO" . ((number "110" 10837 . 10840)))
+          ("CONF_R_MISSING_FINISH_FUNCTION" . ((number "111" 11138 . 11141)))
+          ("CONF_R_UNKNOWN_MODULE_NAME" . ((number "113" 11549 . 11552)))
+          ("CONF_F_NCONF_LOAD_FP" . ((number "114" 10874 . 10877)))
+          ("CONF_R_UNABLE_TO_CREATE_NEW_SECTION" . ((number "103" 11507 . 11510)))
+          ("CONF_F_CONF_MODULES_LOAD" . ((number "116" 10352 . 10355)))
+          ("CONF_F_MODULE_LOAD_DSO" . ((number "117" 10495 . 10498)))
+          ("CONF_R_NO_CONF_OR_ENVIRONMENT_VARIABLE" . ((number "106" 11354 . 11357)))
+          )
+
+    )
+   (semanticdb-table "bio.h"
+    :file "bio.h"
+    :fsize 35735
+    :lastmodtime '(20747 7667 0 0)
+    )
+   (semanticdb-table "lhash.h"
+    :file "lhash.h"
+    :fsize 8152
+    :lastmodtime '(20747 7667 0 0)
+    )
+   (semanticdb-table "stack.h"
+    :file "stack.h"
+    :fsize 5417
+    :lastmodtime '(20747 7667 0 0)
+    )
+   (semanticdb-table "safestack.h"
+    :file "safestack.h"
+    :fsize 137576
+    :lastmodtime '(20747 7667 0 0)
+    )
+   (semanticdb-table "e_os2.h"
+    :file "e_os2.h"
+    :fsize 9632
+    :lastmodtime '(20747 7667 0 0)
+    )
+   (semanticdb-table "ossl_typ.h"
+    :file "ossl_typ.h"
+    :fsize 6714
+    :lastmodtime '(20747 7667 0 0)
+    )
+   )
+  :file "!usr!include!openssl!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2"
+  )

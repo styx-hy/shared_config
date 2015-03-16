@@ -79,6 +79,16 @@
 (defun zencoding-join-string (lis joiner)
   (mapconcat 'identity lis joiner))
 
+(defun zencoding-get-keys-of-hash (hash)
+  (let ((ks nil))
+    (maphash #'(lambda (k v) (setq ks (cons k ks))) hash)
+    ks))
+
+(defun zencoding-get-vals-of-hash (hash)
+  (let ((vs nil))
+    (maphash #'(lambda (k v) (setq vs (cons v vs))) hash)
+    vs))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Generic parsing macros and utilities
 
@@ -131,198 +141,138 @@
 ;; Don't edit.
 (zencoding-defparameter zencoding-snippets
 (let ((tbl (make-hash-table :test 'equal)))
-(puthash "xml" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "profile" "xml" tbl)
-(puthash "extends" "html" tbl)
-(puthash "filters" "html" tbl)
-tbl) tbl)
-(puthash "scss" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "extends" "css" tbl)
-tbl) tbl)
-(puthash "sass" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "extends" "css" tbl)
-tbl) tbl)
-(puthash "less" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "extends" "css" tbl)
-tbl) tbl)
-(puthash "variables" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "lang" "en" tbl)
-(puthash "locale" "en-US" tbl)
-(puthash "charset" "UTF-8" tbl)
-(puthash "indentation" "\t" tbl)
-(puthash "newline" "\n" tbl)
-tbl) tbl)
-(puthash "stylus" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "extends" "css" tbl)
-tbl) tbl)
 (puthash "html" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "profile" "html" tbl)
-(puthash "abbreviations" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "a:link" "<a href=\"http://|\">" tbl)
-(puthash "doc4" "html>(head>meta[http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\"]+title{${1:Document}})" tbl)
-(puthash "input:datetime-local" "inp[type=datetime-local]" tbl)
-(puthash "input:reset" "input:button[type=reset]" tbl)
-(puthash "meta:vp" "<meta name=\"viewport\" content=\"width=${1:device-width}, user-scalable=${2:no}, initial-scale=${3:1.0}, maximum-scale=${4:1.0}, minimum-scale=${5:1.0}\" />" tbl)
+(puthash "snippets" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "!!!" "<!doctype html>" tbl)
+(puthash "!!!xxs" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" tbl)
+(puthash "cc:ie6" "<!--[if lte IE 6]>\n\t${child}\n<![endif]-->" tbl)
+(puthash "cc:ie" "<!--[if IE]>\n\t${child}\n<![endif]-->" tbl)
+(puthash "!!!xs" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" tbl)
+(puthash "!!!4t" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" tbl)
+(puthash "cc:noie" "<!--[if !IE]><!-->\n\t${child}\n<!--<![endif]-->" tbl)
+(puthash "!!!4s" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" tbl)
+(puthash "!!!xt" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" tbl)
+tbl) tbl)
+(puthash "aliases" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "a:link" "a href=http://" tbl)
+(puthash "doc4" "html>(head>meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\"+title{Document})" tbl)
+(puthash "input:datetime-local" "input type=datetime-local" tbl)
+(puthash "input:reset" "input type=reset" tbl)
+(puthash "meta:vp" "meta name=viewport content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"" tbl)
 (puthash "colg" "colgroup" tbl)
-(puthash "figc" "figcaption" tbl)
-(puthash "btn:s" "button[type=submit]" tbl)
-(puthash "btn:r" "button[type=reset]" tbl)
-(puthash "style" "<style>" tbl)
+(puthash "btn:s" "button type=submit" tbl)
+(puthash "btn:r" "button type=reset" tbl)
+(puthash "tr+" "tr>td" tbl)
 (puthash "adr" "address" tbl)
-(puthash "img" "<img src=\"\" alt=\"\" />" tbl)
-(puthash "bdo:l" "<bdo dir=\"ltr\">" tbl)
-(puthash "param" "<param name=\"\" value=\"\" />" tbl)
+(puthash "bdo:l" "bdo dir=ltr" tbl)
 (puthash "colgroup+" "colgroup>col" tbl)
-(puthash "btn:b" "button[type=button]" tbl)
-(puthash "form:post" "<form action=\"\" method=\"post\">" tbl)
-(puthash "bdo:r" "<bdo dir=\"rtl\">" tbl)
+(puthash "btn:b" "button type=button" tbl)
+(puthash "form:post" "form action method=post" tbl)
+(puthash "bdo:r" "bdo dir=rtl" tbl)
 (puthash "fig" "figure" tbl)
-(puthash "input:radio" "inp[type=radio]" tbl)
-(puthash "link:print" "<link rel=\"stylesheet\" href=\"${1:print}.css\" media=\"print\" />" tbl)
+(puthash "input:radio" "input type=radio" tbl)
+(puthash "link:print" "link rel=stylesheet href=print.css media=print" tbl)
 (puthash "opt" "option" tbl)
 (puthash "input:i" "input:image" tbl)
-(puthash "input:h" "input:hidden" tbl)
+(puthash "figc" "figcaption" tbl)
 (puthash "input:f" "input:file" tbl)
 (puthash "input:c" "input:checkbox" tbl)
 (puthash "input:b" "input:button" tbl)
-(puthash "abbr" "<abbr title=\"\">" tbl)
-(puthash "colg+" "colgroup>col" tbl)
-(puthash "input:t" "inp" tbl)
+(puthash "input:t" "input" tbl)
 (puthash "input:p" "input:password" tbl)
 (puthash "input:s" "input:submit" tbl)
 (puthash "input:r" "input:radio" tbl)
 (puthash "ifr" "iframe" tbl)
 (puthash "emb" "embed" tbl)
 (puthash "optg+" "optgroup>option" tbl)
-(puthash "isindex" "<isindex/>" tbl)
-(puthash "html:5" "!!!+doc[lang=${lang}]" tbl)
-(puthash "link:atom" "<link rel=\"alternate\" type=\"application/atom+xml\" title=\"Atom\" href=\"${1:atom.xml}\" />" tbl)
-(puthash "table+" "table>tr>td" tbl)
 (puthash "cmd" "command" tbl)
+(puthash "html:5" "!!!+doc lang=en" tbl)
+(puthash "link:atom" "link rel=alternate type=\"application/atom+xml\" title=Atom href=atom.xml" tbl)
+(puthash "table+" "table>tr>td" tbl)
 (puthash "art" "article" tbl)
-(puthash "frame" "<frame/>" tbl)
-(puthash "area:r" "<area shape=\"rect\" coords=\"\" href=\"\" alt=\"\" />" tbl)
-(puthash "area:p" "<area shape=\"poly\" coords=\"\" href=\"\" alt=\"\" />" tbl)
-(puthash "input:date" "inp[type=date]" tbl)
-(puthash "meta" "<meta/>" tbl)
-(puthash "video" "<video src=\"\">" tbl)
-(puthash "input:button" "<input type=\"button\" value=\"\" />" tbl)
-(puthash "area:d" "<area shape=\"default\" href=\"\" alt=\"\" />" tbl)
-(puthash "area:c" "<area shape=\"circle\" coords=\"\" href=\"\" alt=\"\" />" tbl)
+(puthash "input:search" "input type=search" tbl)
+(puthash "area:r" "area shape=rect coords href alt" tbl)
+(puthash "area:p" "area shape=poly coords href alt" tbl)
+(puthash "input:date" "input type=date" tbl)
+(puthash "input:button" "input type=button" tbl)
+(puthash "area:d" "area shape=default href alt" tbl)
+(puthash "area:c" "area shape=circle coords href alt" tbl)
 (puthash "out" "output" tbl)
 (puthash "ftr" "footer" tbl)
 (puthash "dlg" "dialog" tbl)
-(puthash "script:src" "<script src=\"\">" tbl)
-(puthash "form:get" "<form action=\"\" method=\"get\">" tbl)
-(puthash "meta:utf" "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />" tbl)
-(puthash "label" "<label for=\"\">" tbl)
-(puthash "basefont" "<basefont/>" tbl)
-(puthash "input:time" "inp[type=time]" tbl)
-(puthash "link:favicon" "<link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"${1:favicon.ico}\" />" tbl)
-(puthash "menu:toolbar" "menu[type=toolbar]>" tbl)
+(puthash "script:src" "script src" tbl)
+(puthash "form:get" "form action method=get" tbl)
+(puthash "meta:utf" "meta http-equiv=Content-Type content=\"text/html;charset=UTF-8\"" tbl)
+(puthash "input:time" "input type=time" tbl)
+(puthash "menu:toolbar" "menu type=toolbar" tbl)
 (puthash "prog" "progress" tbl)
-(puthash "input:email" "inp[type=email]" tbl)
-(puthash "str" "strong" tbl)
+(puthash "input:email" "input type=email" tbl)
+(puthash "input:submit" "input type=submit" tbl)
 (puthash "leg" "legend" tbl)
-(puthash "acronym" "<acronym title=\"\">" tbl)
 (puthash "ol+" "ol>li" tbl)
-(puthash "tr+" "tr>td" tbl)
 (puthash "optgroup+" "optgroup>option" tbl)
-(puthash "base" "<base href=\"\" />" tbl)
 (puthash "bq" "blockquote" tbl)
-(puthash "br" "<br/>" tbl)
 (puthash "src" "source" tbl)
 (puthash "obj" "object" tbl)
 (puthash "dl+" "dl>dt+dd" tbl)
-(puthash "script" "<script>" tbl)
 (puthash "acr" "acronym" tbl)
-(puthash "input:password" "inp[type=password]" tbl)
-(puthash "col" "<col/>" tbl)
-(puthash "html:4t" "!!!4t+doc4[lang=${lang}]" tbl)
-(puthash "input:file" "inp[type=file]" tbl)
-(puthash "html:4s" "!!!4s+doc4[lang=${lang}]" tbl)
+(puthash "input:password" "input type=password" tbl)
+(puthash "html:4t" "!!!4t+doc4 lang=en" tbl)
+(puthash "input:file" "input type=file" tbl)
+(puthash "html:4s" "!!!4s+doc4 lang=en" tbl)
 (puthash "tarea" "textarea" tbl)
-(puthash "select" "<select name=\"\" id=\"\">" tbl)
-(puthash "input:number" "inp[type=number]" tbl)
-(puthash "input:range" "inp[type=range]" tbl)
-(puthash "area" "<area shape=\"\" coords=\"\" href=\"\" alt=\"\" />" tbl)
-(puthash "input:image" "<input type=\"image\" src=\"\" alt=\"\" />" tbl)
+(puthash "link:favicon" "link icon rel=shortcut type=image/x-icon href=favicon.ico" tbl)
+(puthash "input:number" "input type=number" tbl)
+(puthash "input:range" "input type=range" tbl)
+(puthash "input:image" "input type=image src alt" tbl)
 (puthash "ul+" "ul>li" tbl)
-(puthash "input:search" "inp[type=search]" tbl)
-(puthash "html:xxs" "!!!xxs+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]" tbl)
-(puthash "input:month" "inp[type=month]" tbl)
+(puthash "html:xxs" "!!!xxs+doc4 xmlns=http://www.w3.org/1999/xhtml xml:lang=en" tbl)
+(puthash "input:month" "input type=month" tbl)
 (puthash "fset" "fieldset" tbl)
-(puthash "meta:win" "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=windows-1251\" />" tbl)
-(puthash "option" "<option value=\"\">" tbl)
-(puthash "form" "<form action=\"\">" tbl)
-(puthash "hr" "<hr/>" tbl)
+(puthash "meta:win" "meta http-equiv=Content-Type content=\"text/html;charset=windows-1251\"" tbl)
+(puthash "menu:t" "menu:toolbar" tbl)
 (puthash "menu:c" "menu:context" tbl)
-(puthash "link" "<link rel=\"stylesheet\" href=\"\" />" tbl)
-(puthash "input" "<input type=\"${1:text}\" />" tbl)
-(puthash "link:rss" "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"${1:rss.xml}\" />" tbl)
+(puthash "link:rss" "link rel=alternate type=application/rss+xml title=RSS href=rss.xml" tbl)
 (puthash "select+" "select>option" tbl)
 (puthash "hdr" "header" tbl)
 (puthash "cap" "caption" tbl)
 (puthash "det" "details" tbl)
-(puthash "keygen" "<keygen/>" tbl)
-(puthash "link:touch" "<link rel=\"apple-touch-icon\" href=\"${1:favicon.png}\" />" tbl)
-(puthash "iframe" "<iframe src=\"\" frameborder=\"0\">" tbl)
-(puthash "link:css" "<link rel=\"stylesheet\" href=\"${1:style}.css\" />" tbl)
-(puthash "input:week" "inp[type=week]" tbl)
-(puthash "embed" "<embed src=\"\" type=\"\" />" tbl)
+(puthash "link:touch" "link rel=apple-touch-icon href=favicon.png" tbl)
+(puthash "str" "strong" tbl)
+(puthash "link:css" "link rel=stylesheet href=style.css" tbl)
+(puthash "input:week" "input type=week" tbl)
 (puthash "optg" "optgroup" tbl)
-(puthash "input:datetime" "inp[type=datetime]" tbl)
-(puthash "inp" "<input type=\"${1:text}\" name=\"\" id=\"\" />" tbl)
-(puthash "datag" "datagrid" tbl)
-(puthash "menu:t" "menu:toolbar" tbl)
+(puthash "input:datetime" "input type=datetime" tbl)
+(puthash "input:h" "input:hidden" tbl)
 (puthash "!" "html:5" tbl)
-(puthash "html:xml" "<html xmlns=\"http://www.w3.org/1999/xhtml\">" tbl)
+(puthash "html:xml" "html xmlns=http://www.w3.org/1999/xhtml" tbl)
 (puthash "btn" "button" tbl)
-(puthash "input:url" "inp[type=url]" tbl)
-(puthash "menu:context" "menu[type=context]>" tbl)
-(puthash "fst" "fieldset" tbl)
-(puthash "map" "<map name=\"\">" tbl)
-(puthash "input:color" "inp[type=color]" tbl)
-(puthash "meta:compat" "<meta http-equiv=\"X-UA-Compatible\" content=\"${1:IE=7}\" />" tbl)
-(puthash "input:hidden" "input[type=hidden name]" tbl)
-(puthash "object" "<object data=\"\" type=\"\">" tbl)
-(puthash "a:mail" "<a href=\"mailto:|\">" tbl)
-(puthash "html:xs" "!!!xs+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]" tbl)
-(puthash "html:xt" "!!!xt+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]" tbl)
-(puthash "a" "<a href=\"\">" tbl)
+(puthash "input:url" "input type=url" tbl)
+(puthash "menu:context" "menu type=context" tbl)
+(puthash "colg+" "colgroup>col" tbl)
+(puthash "input:color" "input type=color" tbl)
+(puthash "meta:compat" "meta http-equiv=X-UA-Compatible content=\"IE=edge,chrome=1\"" tbl)
+(puthash "input:hidden" "input type=hidden" tbl)
+(puthash "a:mail" "a href=mailto:" tbl)
+(puthash "html:xs" "!!!xs+doc4 xmlns=http://www.w3.org/1999/xhtml xml:lang=en" tbl)
+(puthash "html:xt" "!!!xt+doc4 xmlns=http://www.w3.org/1999/xhtml xml:lang=en" tbl)
 (puthash "datal" "datalist" tbl)
 (puthash "map+" "map>area" tbl)
 (puthash "kg" "keygen" tbl)
-(puthash "textarea" "<textarea name=\"\" id=\"\" cols=\"${1:30}\" rows=\"${2:10}\">" tbl)
-(puthash "doc" "html>(head>meta[charset=UTF-8]+title{${1:Document}})+body" tbl)
-(puthash "input:submit" "<input type=\"submit\" value=\"\" />" tbl)
-(puthash "input:text" "inp" tbl)
-(puthash "input:checkbox" "inp[type=checkbox]" tbl)
-(puthash "command" "<command/>" tbl)
+(puthash "doc" "html>(head>meta charset=UTF-8+title{Document})+body" tbl)
+(puthash "datag" "datagrid" tbl)
+(puthash "input:text" "input" tbl)
+(puthash "input:checkbox" "input type=checkbox" tbl)
+(puthash "fst" "fieldset" tbl)
 (puthash "sect" "section" tbl)
-(puthash "audio" "<audio src=\"\">" tbl)
-(puthash "bdo" "<bdo dir=\"\">" tbl)
 tbl) tbl)
-(puthash "snippets" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "c" "<!-- |${child} -->" tbl)
-(puthash "!!!" "<!doctype html>" tbl)
-(puthash "!!!xxs" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" tbl)
-(puthash "cc:ie6" "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->" tbl)
-(puthash "cc:ie" "<!--[if IE]>\n\t${child}|\n<![endif]-->" tbl)
-(puthash "!!!xs" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" tbl)
-(puthash "!!!4t" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" tbl)
-(puthash "cc:noie" "<!--[if !IE]><!-->\n\t${child}|\n<!--<![endif]-->" tbl)
-(puthash "!!!4s" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" tbl)
-(puthash "!!!xt" "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" tbl)
-tbl) tbl)
-(puthash "filters" "html" tbl)
 tbl) tbl)
 (puthash "css" (let ((tbl (make-hash-table :test 'equal)))
 (puthash "snippets" (let ((tbl (make-hash-table :test 'equal)))
 (puthash "bdls" "border-left-style:|;" tbl)
 (puthash "bdlw" "border-left-width:|;" tbl)
 (puthash "bdli" "border-left-image:url(|);" tbl)
-(puthash "bdlc" "border-left-color:#${1:000};" tbl)
+(puthash "bdlc" "border-left-color:${1:#000};" tbl)
 (puthash "whsc" "white-space-collapse:|;" tbl)
 (puthash "bdtlrs" "border-top-left-radius:|;" tbl)
 (puthash "bdblrs" "border-bottom-left-radius:|;" tbl)
@@ -364,7 +314,7 @@ tbl) tbl)
 (puthash "d:tbclg" "display:table-column-group;" tbl)
 (puthash "bdf" "border-fit:${1:repeat};" tbl)
 (puthash "@f" "@font-face {\n\tfont-family:|;\n\tsrc:url(|);\n}" tbl)
-(puthash "bdc" "border-color:#${1:000};" tbl)
+(puthash "bdc" "border-color:${1:#000};" tbl)
 (puthash "d:rbt" "display:ruby-text;" tbl)
 (puthash "bdl" "border-left:|;" tbl)
 (puthash "@i" "@import url(|);" tbl)
@@ -421,7 +371,7 @@ tbl) tbl)
 (puthash "ti" "text-indent:|;" tbl)
 (puthash "pgbi:av" "page-break-inside:avoid;" tbl)
 (puthash "tj:t" "text-justify:tibetan;" tbl)
-(puthash "bgc" "background-color:#${1:fff};" tbl)
+(puthash "bgc" "background-color:${1:#fff};" tbl)
 (puthash "trf:tx" "transform: translateX(${1:x});" tbl)
 (puthash "trf:ty" "transform: translateY(${1:y});" tbl)
 (puthash "va:sup" "vertical-align:super;" tbl)
@@ -511,11 +461,11 @@ tbl) tbl)
 (puthash "bdbi" "border-bottom-image:url(|);" tbl)
 (puthash "bdbk" "border-break:${1:close};" tbl)
 (puthash "pgba:r" "page-break-after:right;" tbl)
-(puthash "wfsm" "-webkit-font-smoothing:${antialiased};" tbl)
-(puthash "bdbc" "border-bottom-color:#${1:000};" tbl)
+(puthash "wfsm" "-webkit-font-smoothing:${1:antialiased};" tbl)
+(puthash "bdbc" "border-bottom-color:${1:#000};" tbl)
 (puthash "ec" "empty-cells:|;" tbl)
 (puthash "te:ac" "text-emphasis:accent;" tbl)
-(puthash "fs" "font-style:${italic};" tbl)
+(puthash "fs" "font-style:${1:italic};" tbl)
 (puthash "l:a" "left:auto;" tbl)
 (puthash "bdr:n" "border-right:none;" tbl)
 (puthash "bdrst:n" "border-right-style:none;" tbl)
@@ -553,7 +503,7 @@ tbl) tbl)
 (puthash "bdtw" "border-top-width:|;" tbl)
 (puthash "cnt:c" "content:counter(|);" tbl)
 (puthash "cnt:a" "content:attr(|);" tbl)
-(puthash "bdtc" "border-top-color:#${1:000};" tbl)
+(puthash "bdtc" "border-top-color:${1:#000};" tbl)
 (puthash "cnt:noq" "content:no-open-quote;" tbl)
 (puthash "td:u" "text-decoration:underline;" tbl)
 (puthash "bdti" "border-top-image:url(|);" tbl)
@@ -567,7 +517,7 @@ tbl) tbl)
 (puthash "tt:l" "text-transform:lowercase;" tbl)
 (puthash "fl:r" "float:right;" tbl)
 (puthash "tt:c" "text-transform:capitalize;" tbl)
-(puthash "tov" "text-overflow:${ellipsis};" tbl)
+(puthash "tov" "text-overflow:${1:ellipsis};" tbl)
 (puthash "ec:s" "empty-cells:show;" tbl)
 (puthash "bgr:sp" "background-repeat:space;" tbl)
 (puthash "ec:h" "empty-cells:hide;" tbl)
@@ -668,8 +618,8 @@ tbl) tbl)
 (puthash "fst:ue" "font-stretch:ultra-expanded;" tbl)
 (puthash "fst:uc" "font-stretch:ultra-condensed;" tbl)
 (puthash "pgbb:al" "page-break-before:always;" tbl)
-(puthash "c" "color:#${1:000};" tbl)
-(puthash "bdrc" "border-right-color:#${1:000};" tbl)
+(puthash "c" "color:${1:#000};" tbl)
+(puthash "bdrc" "border-right-color:${1:#000};" tbl)
 (puthash "bdtli:n" "border-top-left-image:none;" tbl)
 (puthash "bdtli:c" "border-top-left-image:continue;" tbl)
 (puthash "list:ur" "list-style-type:upper-roman;" tbl)
@@ -747,7 +697,7 @@ tbl) tbl)
 (puthash "animdir:a" "animation-direction:alternate;" tbl)
 (puthash "bxz:cb" "box-sizing:content-box;" tbl)
 (puthash "rsz:n" "resize:none;" tbl)
-(puthash "cur" "cursor:${pointer};" tbl)
+(puthash "cur" "cursor:${1:pointer};" tbl)
 (puthash "whs:p" "white-space:pre;" tbl)
 (puthash "rsz:b" "resize:both;" tbl)
 (puthash "animdir:n" "animation-direction:normal;" tbl)
@@ -820,7 +770,7 @@ tbl) tbl)
 (puthash "fs:i" "font-style:italic;" tbl)
 (puthash "ct:oq" "content:open-quote;" tbl)
 (puthash "bds:g" "border-style:groove;" tbl)
-(puthash "olc" "outline-color:#${1:000};" tbl)
+(puthash "olc" "outline-color:${1:#000};" tbl)
 (puthash "bds:r" "border-style:ridge;" tbl)
 (puthash "bds:s" "border-style:solid;" tbl)
 (puthash "bds:w" "border-style:wave;" tbl)
@@ -847,7 +797,7 @@ tbl) tbl)
 (puthash "trsdu" "transition-duration:${1:time};" tbl)
 (puthash "d:tbcp" "display:table-caption;" tbl)
 (puthash "bdrs" "border-radius:|;" tbl)
-(puthash "us" "user-select:${none};" tbl)
+(puthash "us" "user-select:${1:none};" tbl)
 (puthash "bgcp:pb" "background-clip:padding-box;" tbl)
 (puthash "bdri" "border-right-image:url(|);" tbl)
 (puthash "z" "z-index:|;" tbl)
@@ -858,7 +808,7 @@ tbl) tbl)
 (puthash "animtf:eo" "animation-timing-function:ease-out;" tbl)
 (puthash "whs:pw" "white-space:pre-wrap;" tbl)
 (puthash "animtf:ei" "animation-timing-function:ease-in;" tbl)
-(puthash "ap" "appearance:${none};" tbl)
+(puthash "ap" "appearance:${1:none};" tbl)
 (puthash "animps" "animation-play-state:${1:running};" tbl)
 (puthash "lisi:n" "list-style-image:none;" tbl)
 (puthash "bdbc:t" "border-bottom-color:transparent;" tbl)
@@ -882,66 +832,1562 @@ tbl) tbl)
 (puthash "cps" "caption-side:|;" tbl)
 (puthash "v:v" "visibility:visible;" tbl)
 tbl) tbl)
-(puthash "filters" "html" tbl)
 tbl) tbl)
-(puthash "haml" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "profile" "xml" tbl)
-(puthash "extends" "html" tbl)
-(puthash "filters" "haml" tbl)
+tbl))
+;; src/preferences.el
+;; This file is generated from conf/preferences.json
+;; Don't edit.
+(zencoding-defparameter zencoding-preferences
+(let ((tbl (make-hash-table :test 'equal)))
+(puthash "html" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "tags" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "code" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
 tbl) tbl)
-(puthash "xsl" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "profile" "xml" tbl)
-(puthash "abbreviations" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "ch" "<xsl:choose>" tbl)
-(puthash "co" "<xsl:copy-of select=\"\"/>" tbl)
-(puthash "fall" "<xsl:fallback>" tbl)
-(puthash "vare" "<xsl:variable name=\"\" select=\"\"/>" tbl)
-(puthash "ap" "<xsl:apply-templates select=\"\" mode=\"\"/>" tbl)
-(puthash "api" "<xsl:apply-imports/>" tbl)
-(puthash "attrs" "<xsl:attribute-set name=\"\">" tbl)
-(puthash "strip" "<xsl:strip-space elements=\"\"/>" tbl)
-(puthash "cp" "<xsl:copy select=\"\"/>" tbl)
-(puthash "if" "<xsl:if test=\"\">" tbl)
-(puthash "par" "<xsl:param name=\"\">" tbl)
-(puthash "val" "<xsl:value-of select=\"\"/>" tbl)
-(puthash "for" "each" tbl)
-(puthash "tn" "<xsl:template name=\"\">" tbl)
-(puthash "imp" "<xsl:import href=\"\"/>" tbl)
-(puthash "tm" "<xsl:template match=\"\" mode=\"\">" tbl)
-(puthash "call" "<xsl:call-template name=\"\"/>" tbl)
-(puthash "var" "<xsl:variable name=\"\">" tbl)
-(puthash "inc" "<xsl:include href=\"\"/>" tbl)
-(puthash "proc" "<xsl:processing-instruction name=\"\">" tbl)
-(puthash "pres" "<xsl:preserve-space elements=\"\"/>" tbl)
-(puthash "sort" "<xsl:sort select=\"\" order=\"\"/>" tbl)
-(puthash "pare" "<xsl:param name=\"\" select=\"\"/>" tbl)
-(puthash "nam" "<namespace-alias stylesheet-prefix=\"\" result-prefix=\"\"/>" tbl)
-(puthash "xsl:when" "<xsl:when test=\"\">" tbl)
-(puthash "wh" "xsl:when" tbl)
-(puthash "tname" "tn" tbl)
-(puthash "key" "<xsl:key name=\"\" match=\"\" use=\"\"/>" tbl)
-(puthash "wp" "<xsl:with-param name=\"\" select=\"\"/>" tbl)
-(puthash "msg" "<xsl:message terminate=\"no\">" tbl)
-(puthash "tmatch" "tm" tbl)
-(puthash "attr" "<xsl:attribute name=\"\">" tbl)
-(puthash "tex" "<xsl:text></xsl:text>" tbl)
-(puthash "elem" "<xsl:element name=\"\">" tbl)
-(puthash "num" "<xsl:number value=\"\"/>" tbl)
-(puthash "choose+" "xsl:choose>xsl:when+xsl:otherwise" tbl)
-(puthash "each" "<xsl:for-each select=\"\">" tbl)
-(puthash "ot" "<xsl:otherwise>" tbl)
-(puthash "com" "<xsl:comment>" tbl)
-(puthash "xsl" "!!!+xsl:stylesheet[version=1.0 xmlns:xsl=http://www.w3.org/1999/XSL/Transform]>{\n|}" tbl)
+(puthash "meter" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
 tbl) tbl)
-(puthash "extends" "html" tbl)
-(puthash "snippets" (let ((tbl (make-hash-table :test 'equal)))
-(puthash "!!!" "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" tbl)
+(puthash "tbody" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
 tbl) tbl)
-(puthash "filters" "html, xsl" tbl)
+(puthash "font" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "noscript" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "style" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "img" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "src" "" tbl)
+(puthash "alt" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "title" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "menu" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "tt" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "tr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "param" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "name" "" tbl)
+(puthash "value" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "li" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "source" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "tfoot" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "th" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "input" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "type" "text" tbl)
+(puthash "name" "" tbl)
+(puthash "value" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "td" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "dl" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "blockquote" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "fieldset" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "big" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "dd" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "kbd" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "optgroup" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "dt" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "wbr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "button" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "summary" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "p" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "small" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "output" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "div" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "dir" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "em" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "datalist" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "frame" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "hgroup" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "meta" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "video" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "src" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "rt" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "canvas" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "rp" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "sub" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "bdo" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "dir" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "bdi" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "label" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "for" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "acronym" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "title" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "sup" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "progress" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "body" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "basefont" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "base" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "href" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "br" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "address" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "article" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "strong" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "legend" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "ol" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "script" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "caption" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "s" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "dialog" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "col" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h2" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h3" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h1" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h6" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h4" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "h5" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "header" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "table" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "select" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "name" "" tbl)
+(puthash "id" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "noframes" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "span" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "area" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "shape" "" tbl)
+(puthash "href" "" tbl)
+(puthash "coords" "" tbl)
+(puthash "alt" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "mark" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "dfn" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "strike" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "cite" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "thead" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "head" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "option" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "value" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "form" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "action" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "hr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "var" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "link" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "href" "" tbl)
+(puthash "rel" "stylesheet" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "ruby" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "b" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "colgroup" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "keygen" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "ul" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "applet" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "del" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "iframe" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "src" "" tbl)
+(puthash "frameborder" "0" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "embed" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "src" "" tbl)
+(puthash "type" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "pre" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "frameset" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "figure" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "ins" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "aside" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "html" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "nav" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "details" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "u" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "samp" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "map" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "name" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "track" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" t tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "object" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "type" "" tbl)
+(puthash "data" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "figcaption" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "a" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "href" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "center" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "textarea" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "rows" "10" tbl)
+(puthash "cols" "30" tbl)
+(puthash "name" "" tbl)
+(puthash "id" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "footer" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "i" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "q" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "command" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "time" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+(puthash "audio" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "src" "" tbl)
+tbl) tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "section" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "block" t tbl)
+tbl) tbl)
+(puthash "abbr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "selfClosing" nil tbl)
+(puthash "defaultAttr" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "title" "" tbl)
+tbl) tbl)
+(puthash "block" nil tbl)
+tbl) tbl)
+tbl) tbl)
+tbl) tbl)
+(puthash "css" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "vendorPrefixesProperties" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "text-fill-color" (vector 
+"webkit"
+)
+ tbl)
+(puthash "ime-mode" (vector 
+"ms"
+)
+ tbl)
+(puthash "grid-layer" (vector 
+"ms"
+)
+ tbl)
+(puthash "user-drag" (vector 
+"webkit"
+)
+ tbl)
+(puthash "mask-image" (vector 
+"webkit"
+)
+ tbl)
+(puthash "font-feature-settings" (vector 
+"moz"
+"ms"
+)
+ tbl)
+(puthash "outline-radius-topleft" (vector 
+"moz"
+)
+ tbl)
+(puthash "mask-box-image-slice" (vector 
+"webkit"
+)
+ tbl)
+(puthash "background-composite" (vector 
+"webkit"
+)
+ tbl)
+(puthash "text-underline-position" (vector 
+"ms"
+)
+ tbl)
+(puthash "hyphenate-limit-chars" (vector 
+"ms"
+)
+ tbl)
+(puthash "marquee-speed" (vector 
+"o"
+)
+ tbl)
+(puthash "input-required" (vector 
+"o"
+)
+ tbl)
+(puthash "color-correction" (vector 
+"webkit"
+)
+ tbl)
+(puthash "background-size" (vector 
+"webkit"
+)
+ tbl)
+(puthash "background-origin" (vector 
+"webkit"
+)
+ tbl)
+(puthash "wrap-through" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-emphasis-position" (vector 
+"webkit"
+)
+ tbl)
+(puthash "user-select" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "dashboard-region" (vector 
+"webkit"
+"o"
+)
+ tbl)
+(puthash "accesskey" (vector 
+"o"
+)
+ tbl)
+(puthash "scrollbar-track-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "grid-columns" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-stroke-width" (vector 
+"webkit"
+)
+ tbl)
+(puthash "link-source" (vector 
+"o"
+)
+ tbl)
+(puthash "scrollbar-arrow-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "border-radius" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "text-stroke-color" (vector 
+"webkit"
+)
+ tbl)
+(puthash "box-shadow" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "flow-into" (vector 
+"ms"
+)
+ tbl)
+(puthash "scrollbar-highlight-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "border-left-colors" (vector 
+"moz"
+)
+ tbl)
+(puthash "word-wrap" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-emphasis-color" (vector 
+"webkit"
+)
+ tbl)
+(puthash "hyphens" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "marquee-direction" (vector 
+"webkit"
+)
+ tbl)
+(puthash "column-rule-width" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "box-lines" (vector 
+"webkit"
+"ms"
+)
+ tbl)
+(puthash "column-break-inside" (vector 
+"webkit"
+)
+ tbl)
+(puthash "scroll-snap-points-x" (vector 
+"ms"
+)
+ tbl)
+(puthash "grid-row-align" (vector 
+"ms"
+)
+ tbl)
+(puthash "force-broken-image-icon" (vector 
+"moz"
+)
+ tbl)
+(puthash "animation-fill-mode" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "box-line-progression" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-size" (vector 
+"webkit"
+)
+ tbl)
+(puthash "scroll-boundary-left" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-combine" (vector 
+"webkit"
+)
+ tbl)
+(puthash "grid-column-align" (vector 
+"ms"
+)
+ tbl)
+(puthash "perspective-origin" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "overflow-style" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-position" (vector 
+"webkit"
+)
+ tbl)
+(puthash "content-zoom-chaining" (vector 
+"ms"
+)
+ tbl)
+(puthash "column-span" (vector 
+"webkit"
+)
+ tbl)
+(puthash "border-fit" (vector 
+"webkit"
+)
+ tbl)
+(puthash "outline-radius-topright" (vector 
+"moz"
+)
+ tbl)
+(puthash "tab-size" (vector 
+"moz"
+"o"
+)
+ tbl)
+(puthash "layout-grid-type" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-clip" (vector 
+"webkit"
+)
+ tbl)
+(puthash "column-gap" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "text-security" (vector 
+"webkit"
+)
+ tbl)
+(puthash "text-align-last" (vector 
+"ms"
+)
+ tbl)
+(puthash "svg-shadow" (vector 
+"webkit"
+)
+ tbl)
+(puthash "accelerator" (vector 
+"ms"
+)
+ tbl)
+(puthash "locale" (vector 
+"webkit"
+)
+ tbl)
+(puthash "line-clamp" (vector 
+"webkit"
+)
+ tbl)
+(puthash "column-count" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "line-box-contain" (vector 
+"webkit"
+)
+ tbl)
+(puthash "line-break" (vector 
+"webkit"
+"ms"
+)
+ tbl)
+(puthash "transform-style" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "perspective" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "orient" (vector 
+"moz"
+)
+ tbl)
+(puthash "float-edge" (vector 
+"moz"
+)
+ tbl)
+(puthash "image-region" (vector 
+"moz"
+)
+ tbl)
+(puthash "mask-box-image-width" (vector 
+"webkit"
+)
+ tbl)
+(puthash "background-inline-policy" (vector 
+"moz"
+)
+ tbl)
+(puthash "user-modify" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "content-zoom-snap-type" (vector 
+"ms"
+)
+ tbl)
+(puthash "outline-radius-bottomright" (vector 
+"moz"
+)
+ tbl)
+(puthash "wrap-margin" (vector 
+"ms"
+)
+ tbl)
+(puthash "transform-origin-z" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-box-image" (vector 
+"webkit"
+)
+ tbl)
+(puthash "scroll-chaining" (vector 
+"ms"
+)
+ tbl)
+(puthash "grid-row" (vector 
+"ms"
+)
+ tbl)
+(puthash "nbsp-mode" (vector 
+"webkit"
+)
+ tbl)
+(puthash "mask-box-image-source" (vector 
+"webkit"
+)
+ tbl)
+(puthash "font-language-override" (vector 
+"moz"
+)
+ tbl)
+(puthash "animation-delay" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "hyphenate-character" (vector 
+"webkit"
+)
+ tbl)
+(puthash "box-flex-group" (vector 
+"webkit"
+)
+ tbl)
+(puthash "border-image" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "highlight" (vector 
+"webkit"
+)
+ tbl)
+(puthash "marquee-repetition" (vector 
+"webkit"
+)
+ tbl)
+(puthash "grid-column" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-align" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "user-input" (vector 
+"moz"
+)
+ tbl)
+(puthash "animation-duration" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "transform-origin-y" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-ordinal-group" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "box-orient" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "stack-sizing" (vector 
+"moz"
+)
+ tbl)
+(puthash "transition" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "text-size-adjust" (vector 
+"moz"
+"ms"
+)
+ tbl)
+(puthash "filter" (vector 
+"ms"
+)
+ tbl)
+(puthash "content-zoom-boundary" (vector 
+"ms"
+)
+ tbl)
+(puthash "layout-grid-char" (vector 
+"ms"
+)
+ tbl)
+(puthash "perspective-origin-x" (vector 
+"ms"
+)
+ tbl)
+(puthash "perspective-origin-y" (vector 
+"ms"
+)
+ tbl)
+(puthash "column-rule-color" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "high-contrast-adjust" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-justify" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-decoration-color" (vector 
+"moz"
+)
+ tbl)
+(puthash "block-progression" (vector 
+"ms"
+)
+ tbl)
+(puthash "border-horizontal-spacing" (vector 
+"webkit"
+)
+ tbl)
+(puthash "wrap-flow" (vector 
+"ms"
+)
+ tbl)
+(puthash "margin-before-collapse" (vector 
+"webkit"
+)
+ tbl)
+(puthash "table-baseline" (vector 
+"o"
+)
+ tbl)
+(puthash "background-clip" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "interpolation-mode" (vector 
+"ms"
+)
+ tbl)
+(puthash "scroll-snap-type" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-emphasis-style" (vector 
+"webkit"
+)
+ tbl)
+(puthash "flow-from" (vector 
+"ms"
+)
+ tbl)
+(puthash "backface-visibility" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "transform" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "column-break-after" (vector 
+"webkit"
+)
+ tbl)
+(puthash "mask-composite" (vector 
+"webkit"
+)
+ tbl)
+(puthash "layout-grid" (vector 
+"ms"
+)
+ tbl)
+(puthash "column-width" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "scrollbar-base-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "window-shadow" (vector 
+"moz"
+)
+ tbl)
+(puthash "object-fit" (vector 
+"o"
+)
+ tbl)
+(puthash "text-decorations-in-effect" (vector 
+"webkit"
+)
+ tbl)
+(puthash "box-flex" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "hyphenate-limit-after" (vector 
+"webkit"
+)
+ tbl)
+(puthash "animation-play-state" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "transition-delay" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "input-format" (vector 
+"o"
+)
+ tbl)
+(puthash "mask-attachment" (vector 
+"webkit"
+)
+ tbl)
+(puthash "scroll-boundary-right" (vector 
+"ms"
+)
+ tbl)
+(puthash "animation-iteration-count" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "link" (vector 
+"o"
+)
+ tbl)
+(puthash "content-zoom-boundary-max" (vector 
+"ms"
+)
+ tbl)
+(puthash "text-decoration-style" (vector 
+"moz"
+)
+ tbl)
+(puthash "text-autospace" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-origin" (vector 
+"webkit"
+)
+ tbl)
+(puthash "user-focus" (vector 
+"moz"
+)
+ tbl)
+(puthash "border-bottom-colors" (vector 
+"moz"
+)
+ tbl)
+(puthash "scroll-boundary-top" (vector 
+"ms"
+)
+ tbl)
+(puthash "content-zooming" (vector 
+"ms"
+)
+ tbl)
+(puthash "appearance" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "scroll-snap-x" (vector 
+"ms"
+)
+ tbl)
+(puthash "marquee-loop" (vector 
+"o"
+)
+ tbl)
+(puthash "column-rule-style" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "marquee-increment" (vector 
+"webkit"
+)
+ tbl)
+(puthash "behavior" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-pack" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "animation-direction" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "scrollbar-darkshadow-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "animation-timing-function" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "text-blink" (vector 
+"moz"
+)
+ tbl)
+(puthash "scroll-boundary-bottom" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-box-image-repeat" (vector 
+"webkit"
+)
+ tbl)
+(puthash "text-orientation" (vector 
+"webkit"
+)
+ tbl)
+(puthash "grid-column-span" (vector 
+"ms"
+)
+ tbl)
+(puthash "binding" (vector 
+"moz"
+)
+ tbl)
+(puthash "transform-origin" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "text-decoration-line" (vector 
+"moz"
+)
+ tbl)
+(puthash "animation-name" (vector 
+"webkit"
+"moz"
+"o"
+)
+ tbl)
+(puthash "marquee-dir" (vector 
+"o"
+)
+ tbl)
+(puthash "content-zoom-snap" (vector 
+"ms"
+)
+ tbl)
+(puthash "border-top-colors" (vector 
+"moz"
+)
+ tbl)
+(puthash "border-vertical-spacing" (vector 
+"webkit"
+)
+ tbl)
+(puthash "grid-rows" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-reflect" (vector 
+"webkit"
+)
+ tbl)
+(puthash "hyphenate-limit-before" (vector 
+"webkit"
+)
+ tbl)
+(puthash "mask-box-image-outset" (vector 
+"webkit"
+)
+ tbl)
+(puthash "outline-radius-bottomleft" (vector 
+"moz"
+)
+ tbl)
+(puthash "text-overflow" (vector 
+"ms"
+)
+ tbl)
+(puthash "border-right-colors" (vector 
+"moz"
+)
+ tbl)
+(puthash "layout-flow" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-direction" (vector 
+"webkit"
+"moz"
+"ms"
+)
+ tbl)
+(puthash "animation" (vector 
+"webkit"
+"o"
+)
+ tbl)
+(puthash "hyphenate-limit-lines" (vector 
+"ms"
+)
+ tbl)
+(puthash "scrollbar-face-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "column-break-before" (vector 
+"webkit"
+)
+ tbl)
+(puthash "content-zoom-snap-points" (vector 
+"ms"
+)
+ tbl)
+(puthash "grid-row-span" (vector 
+"ms"
+)
+ tbl)
+(puthash "touch-action" (vector 
+"ms"
+)
+ tbl)
+(puthash "marquee-style" (vector 
+"webkit"
+"o"
+)
+ tbl)
+(puthash "margin-after-collapse" (vector 
+"webkit"
+)
+ tbl)
+(puthash "text-kashida-space" (vector 
+"ms"
+)
+ tbl)
+(puthash "scrollbar-shadow-color" (vector 
+"ms"
+)
+ tbl)
+(puthash "object-position" (vector 
+"o"
+)
+ tbl)
+(puthash "hyphenate-limit-zone" (vector 
+"ms"
+)
+ tbl)
+(puthash "scroll-snap-y" (vector 
+"ms"
+)
+ tbl)
+(puthash "transform-origin-x" (vector 
+"ms"
+)
+ tbl)
+(puthash "transition-property" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "word-break" (vector 
+"ms"
+)
+ tbl)
+(puthash "scroll-snap-points-y" (vector 
+"ms"
+)
+ tbl)
+(puthash "scroll-boundary" (vector 
+"ms"
+)
+ tbl)
+(puthash "mask-repeat" (vector 
+"webkit"
+)
+ tbl)
+(puthash "writing-mode" (vector 
+"webkit"
+"ms"
+)
+ tbl)
+(puthash "layout-grid-mode" (vector 
+"ms"
+)
+ tbl)
+(puthash "background-position-y" (vector 
+"ms"
+)
+ tbl)
+(puthash "scroll-rails" (vector 
+"ms"
+)
+ tbl)
+(puthash "content-zoom-boundary-min" (vector 
+"ms"
+)
+ tbl)
+(puthash "background-position-x" (vector 
+"ms"
+)
+ tbl)
+(puthash "box-sizing" (vector 
+"webkit"
+"moz"
+)
+ tbl)
+(puthash "transition-duration" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+(puthash "rtl-ordering" (vector 
+"webkit"
+)
+ tbl)
+(puthash "layout-grid-line" (vector 
+"ms"
+)
+ tbl)
+(puthash "font-smoothing" (vector 
+"webkit"
+)
+ tbl)
+(puthash "transition-timing-function" (vector 
+"webkit"
+"moz"
+"ms"
+"o"
+)
+ tbl)
+tbl) tbl)
+(puthash "unitlessProperties" (vector 
+"z-index"
+"line-height"
+"opacity"
+"font-weight"
+"zoom"
+)
+ tbl)
+(puthash "floatUnit" "em" tbl)
+(puthash "intUnit" "px" tbl)
+(puthash "color" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "case" "auto" tbl)
+(puthash "shortenIfPossible" t tbl)
+(puthash "trailingAliases" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "h" "hidden" tbl)
+(puthash "s" "solid" tbl)
+(puthash "t" "dotted" tbl)
+(puthash "n" "none" tbl)
+tbl) tbl)
+tbl) tbl)
+(puthash "keywordAliases" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "a" "auto" tbl)
+(puthash "do" "dotted" tbl)
+(puthash "i" "inherit" tbl)
+(puthash "da" "dashed" tbl)
+(puthash "s" "solid" tbl)
+(puthash "t" "transparent" tbl)
+tbl) tbl)
+(puthash "keywords" (vector 
+"auto"
+"inherit"
+)
+ tbl)
+(puthash "unitAliases" (let ((tbl (make-hash-table :test 'equal)))
+(puthash "e" "em" tbl)
+(puthash "r" "rem" tbl)
+(puthash "-" "px" tbl)
+(puthash "x" "ex" tbl)
+(puthash "p" "%" tbl)
+tbl) tbl)
 tbl) tbl)
 tbl))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; XML abbrev
+
+(zencoding-defparameter
+ zencoding-tag-aliases-table
+ (gethash "aliases" (gethash "html" zencoding-snippets)))
 
 (defun zencoding-expr (input)
   "Parse a zen coding expression with optional filters."
@@ -1080,22 +2526,65 @@ tbl))
 
 (defun zencoding-tag (input)
   "Parse a tag."
-  (zencoding-run zencoding-tagname
-                 (let ((tagname (cadr expr))
-                       (has-body? (cddr expr)))
-                   (zencoding-pif (zencoding-run zencoding-identifier
-                                                 (zencoding-tag-classes
-                                                  `(tag (,tagname ,has-body? ,(cddr expr))) input)
-                                                 (zencoding-tag-classes
-                                                  `(tag (,tagname ,has-body? nil)) input))
-                                  (let ((tag-data (cadar it)) (input (cdr it)))
-                                    (zencoding-pif (zencoding-run zencoding-props
-                                                                  (let ((props (cdr expr)))
-                                                                    `((tag ,(append tag-data (list props))) . ,input))
-                                                                  `((tag ,(append tag-data '(nil))) . ,input))
-                                                   (let ((expr (car it)) (input (cdr it)))
-                                                     (zencoding-tag-text expr input))))))
-                 (zencoding-default-tag input)))
+  (zencoding-run
+   zencoding-tagname
+   (let ((tagname (cadr expr))
+         (has-body? (cddr expr)))
+     (zencoding-pif
+      (zencoding-run zencoding-identifier
+                     (zencoding-tag-classes
+                      `(tag (,tagname ,has-body? ,(cddr expr))) input)
+                     (zencoding-tag-classes
+                      `(tag (,tagname ,has-body? nil)) input))
+      (let ((tag-data (cadar it)) (input (cdr it)))
+        (zencoding-pif (zencoding-run
+                        zencoding-props
+                        (let ((props (cdr expr)))
+                          `((tag ,(append tag-data (list props))) . ,input))
+                        `((tag ,(append tag-data '(nil))) . ,input))
+                       (let ((expr (car it)) (input (cdr it)))
+                         (destructuring-bind (expr . input)
+                             (zencoding-tag-text expr input)
+                           (zencoding-expand-tag-alias expr input)))))))
+   (zencoding-default-tag input)))
+
+(defun zencoding-get-first-tag (expr)
+  (if (listp expr)
+      (if (listp (car expr))
+          (zencoding-get-first-tag (car expr))
+        (if (eql (car expr) 'tag)
+            expr
+          (zencoding-get-first-tag (cdr expr))))
+    nil))
+
+(defun zencoding-expand-tag-alias (tag input)
+  (let ((tag-data (cadr tag)))
+    (let ((tag-name (car tag-data)))
+      (zencoding-aif
+       (gethash tag-name zencoding-tag-aliases-table)
+       (let ((expr (if (stringp it)
+                       (zencoding-subexpr it)
+                     it)))
+         (prog1
+             (let ((rt (copy-tree expr)))
+               (let ((first-tag-data (cadr (zencoding-get-first-tag rt))))
+                 (setf (second first-tag-data) (second tag-data))
+                 (setf (third first-tag-data)  (third tag-data))
+                 (setf (fourth first-tag-data)
+                       (remove-duplicates
+                        (append (fourth first-tag-data)
+                                (fourth tag-data)) :test #'string=))
+                 (setf (fifth first-tag-data)
+                       (remove-duplicates
+                        (append (fifth first-tag-data)
+                                (fifth tag-data))
+                        :test #'(lambda (p1 p2)
+                                  (eql (car p1) (car p2)))))
+                 (setf (sixth first-tag-data) (sixth tag-data))
+                 (setf (cdr rt) (concat (cdr rt) input))
+                 rt))
+           (puthash tag-name expr zencoding-tag-aliases-table)))
+       `(,tag . ,input)))))
 
 (defun zencoding-default-tag (input)
   "Parse a #id or .class"
@@ -1140,7 +2629,7 @@ tbl))
                                         (input (elt it 2)))
                                     `((,(read name) ,value) . ,input)))
                  it
-                 (zencoding-parse "=\\([^\\,\\+\\>\\ )]*\\)" 2
+                 (zencoding-parse "=\\([^\\,\\+\\>\\{\\}\\ )]*\\)" 2
                                   "=property value"
                                   (let ((value (elt it 1))
                                         (input (elt it 2)))
@@ -1156,7 +2645,7 @@ tbl))
 
 (defun zencoding-tagname (input)
   "Parse a tagname a-zA-Z0-9 tagname (e.g. html/head/xsl:if/br)."
-  (zencoding-parse "\\([a-zA-Z][a-zA-Z0-9:$@-]*\/?\\)" 2 "tagname, a-zA-Z0-9"
+  (zencoding-parse "\\([a-zA-Z!][a-zA-Z0-9:!$@-]*\/?\\)" 2 "tagname, a-zA-Z0-9"
                    (let* ((tag-spec (elt it 1))
                           (empty-tag (zencoding-regex "\\([^\/]*\\)\/" tag-spec 1))
                           (tag (zencoding-split-numbering-expressions
@@ -1237,30 +2726,25 @@ tbl))
   "Parse an e+e expression, where e is an tag or a pexpr."
   (zencoding-run zencoding-sibling
                  (let ((parent expr))
-                   (zencoding-parse "\\+" 1 "+"
-                                    (zencoding-run zencoding-subexpr
-                                                   (let ((child expr))
-                                                     `((sibling ,parent ,child) . ,input))
-                                                   (zencoding-expand parent input))))
+                   (zencoding-parse
+                    "\\+" 1 "+"
+                    (zencoding-run
+                     zencoding-subexpr
+                     (let ((child expr))
+                       `((sibling ,parent ,child) . ,input))
+                     (zencoding-expand parent input))))
                  '(error "expected first sibling")))
-
-(defvar zencoding-expandable-tags
-  '("dl"    ">(dt+dd)"
-    "ol"    ">li"
-    "ul"    ">li"
-    "table" ">tr>td"))
 
 (defun zencoding-expand (parent input)
   "Parse an e+ expression, where e is an expandable tag"
-  (let* ((parent-tag (car (elt parent 1)))
-         (expandable (member parent-tag zencoding-expandable-tags)))
-    (if expandable
-        (let ((expansion (zencoding-child parent (concat (cadr expandable)))))
-          (zencoding-pif (zencoding-parse "+\\(.*\\)" 1 "+expr"
-                                          (zencoding-subexpr (elt it 1)))
-                         `((sibling ,(car expansion) ,(car it)))
-                         expansion))
-      '(error "expected second sibling"))))
+  (let* ((parent-tag (car (cadr parent))))
+    (setf (caadr parent) (concat parent-tag "+"))
+    (destructuring-bind (parent . input)
+        (zencoding-expand-tag-alias parent input)
+      (zencoding-pif (zencoding-parse "+\\(.*\\)" 1 "+expr"
+                                      (zencoding-subexpr (elt it 1)))
+                     `((sibling ,parent ,@it))
+                     `(,parent . ,input)))))
 
 (defun zencoding-name (input)
   "Parse a class or identifier name, e.g. news, footer, mainimage"
@@ -1291,61 +2775,17 @@ tbl))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Zen coding transformer from AST to string
 
-(defvar zencoding-inline-tags
-  '("a"
-    "abbr"
-    "acronym"
-    "cite"
-    "code"
-    "dd"
-    "dfn"
-    "dt"
-    "em"
-    "h1" "h2" "h3" "h4" "h5" "h6"
-    "kbd"
-    "li"
-    "q"
-    "span"
-    "strong"
-    "var"
-    "textarea"
-    "small"
-    "time" "del" "ins"
-    "sub"
-    "sup"
-    "i" "s" "b"
-    "ruby" "rt" "rp"
-    "bdo"
-    "iframe" "canvas"
-    "audio" "video"
-    "ovject" "embed"
-    "map"))
-
-(defvar zencoding-block-tags
-  '("p"
-    "article"
-    "section"
-    "aside"
-    "nav"
-    "figure"
-    "address"
-    "header"
-    "footer"))
-
-(defvar zencoding-self-closing-tags
-  '("br"
-    "img"
-    "input"
-    "wbr"
-    "object"
-    "source"
-    "area"
-    "param"
-    "option"))
-
 (defvar zencoding-leaf-function nil
   "Function to execute when expanding a leaf node in the
   Zencoding AST.")
+
+(zencoding-defparameter
+ zencoding-tag-settings-table
+ (gethash "tags" (gethash "html" zencoding-preferences)))
+
+(zencoding-defparameter
+ zencoding-tag-snippets-table
+ (gethash "snippets" (gethash "html" zencoding-snippets)))
 
 (defvar zencoding-filters
   '("html" (zencoding-primary-filter zencoding-make-html-tag)
@@ -1382,43 +2822,106 @@ tbl))
          (classes   (pop tag-info))
          (props     (pop tag-info))
          (txt       (pop tag-info))
-         (self-closing? (not (or txt content
-                                 (and has-body?
-                                      (not (member name zencoding-self-closing-tags)))))))
-    (funcall tag-maker name id classes props txt self-closing?
+         (settings  (gethash name zencoding-tag-settings-table)))
+    (funcall tag-maker name has-body? id classes props txt settings
              (if content content
                (if zencoding-leaf-function (funcall zencoding-leaf-function))))))
 
-(defun zencoding-make-html-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
-  "Create HTML markup string"
-  (let* ((id      (zencoding-concat-or-empty " id=\"" tag-id "\""))
-         (classes (zencoding-mapconcat-or-empty " class=\"" tag-classes " " "\""))
-         (props   (zencoding-mapconcat-or-empty " " tag-props " " nil
-                                                (lambda (prop)
-                                                  (concat (symbol-name (car prop)) "=\"" (cadr prop) "\""))))
-         (content-multiline? (and content (string-match "\n" content)))
-         (block-tag? (or (member tag-name zencoding-block-tags)
-                         (and (> (length tag-name) 1)
-                              (not (member tag-name zencoding-inline-tags)))))
-         (lf (if (or content-multiline? block-tag?)
-                 "\n")))
-    (concat "<" tag-name id classes props (if self-closing?
-                                              "/>"
-                                            (concat ">"
-                                                    (if tag-txt
-                                                        (if (or content-multiline? block-tag?)
-                                                            (zencoding-indent tag-txt)
-                                                          tag-txt))
-                                                    (if content
-                                                        (if (or content-multiline? block-tag?)
-                                                            (zencoding-indent content)
-                                                          content))
-                                                    lf
-                                                    "</" tag-name ">")))))
+(defun zencoding-hash-to-list (hash &optional proc)
+  (unless proc (setq proc #'cons))
+  (loop for key being the hash-keys of hash using (hash-values val)
+        collect (funcall proc key val)))
 
-(defun zencoding-make-commented-html-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-merge-tag-props (default-table tag-props)
+  (if default-table
+      (let ((tbl (copy-hash-table default-table)))
+        (loop for prop in tag-props do
+              (puthash (symbol-name (car prop)) (cadr prop) tbl))
+        (zencoding-hash-to-list tbl 'list))
+    tag-props))
+
+(defun zencoding-html-snippets-instantiate-lambda (src)
+  (let ((lines (mapcar
+                #'(lambda (src)
+                    (if (string-match "^\\(.*\\)${child}\\(.*\\)$" src)
+                        (mapcar (lambda (i)
+                                  (match-string i src))
+                                '(1 2))
+                      (list src)))
+                (split-string src "\n"))))
+    (labels
+        ((iter
+          (l m a b)
+          (if l
+              (if (< 1 (length (car l)))
+                  (iter (cdr l)
+                        'b
+                        (cons (caar l)  a)
+                        (cons (cadar l) b))
+                (if (eql m 'a)
+                    (iter (cdr l) m (cons (caar l) a) b)
+                  (iter (cdr l) m a (cons (caar l) b))))
+            (if b
+                `(lambda (contents)
+                   (concat
+                    ,(zencoding-join-string (reverse a) "\n")
+                    contents
+                    ,(zencoding-join-string (reverse b) "\n")))
+              `(lambda (contents)
+                 (concat
+                  ,(zencoding-join-string (reverse a) "\n")
+                  contents))))))
+      (eval (iter lines 'a nil nil)))))
+
+(defun zencoding-make-html-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
+  "Create HTML markup string"
+  (zencoding-aif
+   (gethash tag-name zencoding-tag-snippets-table)
+
+   (let ((fn (if (stringp it)
+                 (zencoding-html-snippets-instantiate-lambda it)
+               it)))
+     (prog1
+         (funcall fn content)
+       (puthash tag-name fn zencoding-tag-snippets-table)))
+
+   (let* ((id           (zencoding-concat-or-empty " id=\"" tag-id "\""))
+          (classes      (zencoding-mapconcat-or-empty " class=\"" tag-classes " " "\""))
+          (props        (let* ((tag-props-default
+                                (and settings (gethash "defaultAttr" settings)))
+                               (merged-tag-props
+                                (zencoding-merge-tag-props
+                                 tag-props-default
+                                 tag-props)))
+                          (zencoding-mapconcat-or-empty
+                           " " merged-tag-props " " nil
+                           (lambda (prop)
+                             (let ((key (car prop)))
+                               (concat (if (symbolp key) (symbol-name key) key)
+                                       "=\"" (cadr prop) "\""))))))
+          (content-multiline? (and content (string-match "\n" content)))
+          (block-tag?         (and settings (gethash "block" settings)))
+          (self-closing?      (and (not (or tag-txt content))
+                                   (or (not tag-has-body?)
+                                       (and settings (gethash "selfClosing" settings)))))
+          (lf                 (if (or content-multiline? block-tag?) "\n")))
+     (concat "<" tag-name id classes props
+             (if self-closing? "/>"
+               (concat ">"
+                       (if tag-txt
+                           (if (or content-multiline? block-tag?)
+                               (zencoding-indent tag-txt)
+                             tag-txt))
+                       (if content
+                           (if (or content-multiline? block-tag?)
+                               (zencoding-indent content)
+                             content))
+                       lf
+                       "</" tag-name ">"))))))
+
+(defun zencoding-make-commented-html-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create HTML markup string with extra comments for elements with #id or .classes"
-  (let ((body (zencoding-make-html-tag tag-name tag-id tag-classes tag-props tag-txt self-closing? content)))
+  (let ((body (zencoding-make-html-tag tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)))
     (if (or tag-id tag-classes)
         (let ((id      (zencoding-concat-or-empty "#" tag-id))
               (classes (zencoding-mapconcat-or-empty "." tag-classes ".")))
@@ -1427,7 +2930,7 @@ tbl))
                   "\n<!-- /" id classes " -->"))
       body)))
 
-(defun zencoding-make-haml-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-make-haml-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create HAML string"
   (let ((name    (if (and (equal tag-name "div")
                           (or tag-id tag-classes))
@@ -1435,26 +2938,26 @@ tbl))
                    (concat "%" tag-name)))
         (id      (zencoding-concat-or-empty "#" tag-id))
         (classes (zencoding-mapconcat-or-empty "." tag-classes "."))
-        (props   (zencoding-mapconcat-or-empty "{" tag-props ", " "}"
-                                               (lambda (prop)
-                                                 (concat ":" (symbol-name (car prop)) " => \"" (cadr prop) "\"")))))
+        (props   (zencoding-mapconcat-or-empty
+                  "{" tag-props ", " "}"
+                  (lambda (prop)
+                    (concat ":" (symbol-name (car prop)) " => \"" (cadr prop) "\"")))))
     (concat name id classes props
             (if tag-txt
                 (zencoding-indent tag-txt))
             (if content
                 (zencoding-indent content)))))
 
-(defun zencoding-make-hiccup-tag (tag-name tag-id tag-classes tag-props tag-txt self-closing? content)
+(defun zencoding-make-hiccup-tag (tag-name tag-has-body? tag-id tag-classes tag-props tag-txt settings content)
   "Create Hiccup string"
   (let* ((id      (zencoding-concat-or-empty "#" tag-id))
          (classes (zencoding-mapconcat-or-empty "." tag-classes "."))
-         (props   (zencoding-mapconcat-or-empty " {" tag-props ", " "}"
-                                                (lambda (prop)
-                                                  (concat ":" (symbol-name (car prop)) " \"" (cadr prop) "\""))))
+         (props   (zencoding-mapconcat-or-empty
+                   " {" tag-props ", " "}"
+                   (lambda (prop)
+                     (concat ":" (symbol-name (car prop)) " \"" (cadr prop) "\""))))
          (content-multiline? (and content (string-match "\n" content)))
-         (block-tag? (or (member tag-name zencoding-block-tags)
-                         (and (> (length tag-name) 1)
-                              (not (member tag-name zencoding-inline-tags))))))
+         (block-tag? (and settings (gethash "block" settings))))
     (concat "[:" tag-name id classes props
             (if tag-txt
                 (let ((tag-txt-quoted (concat "\"" tag-txt "\"")))
@@ -1543,31 +3046,38 @@ tbl))
 ;;
 ;;; CSS abbrev:
 
-(defun zencoding-css-split-args (exp)
-  (zencoding-aif
-   (string-match "[#0-9$-]" exp)
-   (cons (substring exp 0 it) (substring exp it))
-   (list exp)))
-
+(zencoding-defparameter
+ zencoding-css-unit-aliases
+ (gethash "unitAliases" (gethash "css" zencoding-preferences)))
 (defun zencoding-css-arg-number (input)
   (zencoding-parse
-   "\\(\\(?:-\\|\\)[0-9.]+\\)\\(\\(?:-\\|e\\|p\\|x\\)\\|\\)" 3 "css number arguments"
+   " *\\(\\(?:-\\|\\)[0-9.]+\\)\\(-\\|[A-Za-z]*\\)" 3 "css number arguments"
    (cons (list (elt it 1)
-               (let ((unit (string-to-char (elt it 2))))
-                 (cond ((= unit ?-) "px")
-                       ((= unit ?e) "em")
-                       ((= unit ?p) "%")
-                       ((= unit ?x) "ex")
-                       (t "px"))))
+               (let ((unit (elt it 2)))
+                 (if (= (length unit) 0)
+                     (if (find ?. (elt it 1)) "em" "px")
+                   (gethash unit zencoding-css-unit-aliases unit))))
          input)))
 
+(zencoding-defparameter
+ zencoding-css-color-shorten-if-possible
+ (gethash "shortenIfPossible" (gethash "color" (gethash "css" zencoding-preferences))))
+(zencoding-defparameter
+ zencoding-css-color-case
+ (gethash "case" (gethash "color" (gethash "css" zencoding-preferences))))
+(zencoding-defparameter
+ zencoding-css-color-trailing-aliases
+ (gethash "trailingAliases" (gethash "color" (gethash "css" zencoding-preferences))))
 (defun zencoding-css-arg-color (input)
   (zencoding-parse
-   "#\\([0-9a-fA-F]\\{1,6\\}\\)" 2 "css color argument"
-   (cons (let* ((n (elt it 1))
+   (concat " *#\\([0-9a-fA-F]\\{1,6\\}\\)\\(rgb\\|\\)\\(["
+           (zencoding-join-string
+            (zencoding-get-keys-of-hash zencoding-css-color-trailing-aliases) "")
+           "]\\|\\)")
+   4 "css color argument"
+   (let ((color
+          (let* ((n (elt it 1))
                 (l (length n)))
-           (concat
-            "#"
             (substring
              (cond ((= l 1) (concat (make-list 6 (string-to-char n))))
                    ((= l 2) (concat n n n))
@@ -1575,15 +3085,43 @@ tbl))
                              (loop for c in (string-to-list n)
                                    append (list c c))))
                    (t (concat n n)))
-             0 6)))
-         input)))
+             0 6))))
+     (cons
+      (let ((rgb-mode (string= (elt it 2) "rgb")))
+        (if rgb-mode
+            (format "rgb(%d,%d,%d)"
+                    (string-to-int (substring color 0 2) 16)
+                    (string-to-int (substring color 2 4) 16)
+                    (string-to-int (substring color 4 6) 16))
+          (concat
+           "#"
+           (let ((filter (cond ((string= zencoding-css-color-case "auto") #'identity)
+                               ((string= zencoding-css-color-case "up")   #'upcase)
+                               (t                                         #'downcase))))
+             (funcall
+              filter
+              (if (and zencoding-css-color-shorten-if-possible
+                       (eql (aref color 0) (aref color 1))
+                       (eql (aref color 2) (aref color 3))
+                       (eql (aref color 4) (aref color 5)))
+                  (concat (mapcar #'(lambda (i) (aref color i)) '(0 2 4)))
+                color))))))
+      (if (< 0 (length (elt it 3)))
+          (cons (gethash (elt it 3) zencoding-css-color-trailing-aliases) input)
+        input)))))
+
+(defun zencoding-css-arg-something (input)
+  (zencoding-parse
+   " *\\([^ ]+\\)" 2 "css argument"
+   (cons (elt it 1) input)))
 
 (defun zencoding-css-parse-arg (input)
   (zencoding-run zencoding-css-arg-number it
                  (zencoding-run zencoding-css-arg-color it
-                                (if (equal input "")
-                                    it
-                                  (cons input "")))))
+                                (zencoding-run zencoding-css-arg-something it
+                                               (if (equal input "")
+                                                   it
+                                                 (cons input ""))))))
 
 (defun zencoding-css-important-p (input)
   (let ((len (length input)))
@@ -1594,18 +3132,37 @@ tbl))
   (when args
     (let ((rt nil))
       (loop
-       (zencoding-pif (zencoding-css-parse-arg args)
-                      (progn (push (car it) rt)
-                             (setf args (cdr it)))
-                      (return (nreverse rt)))))))
+       (zencoding-pif
+        (zencoding-css-parse-arg args)
+        (loop for i on it do (push (car i) rt)
+              while (consp (cdr i))
+              finally (setq args (cdr i)))
+        (return (nreverse rt)))))))
+
+(defun zencoding-css-split-args (exp)
+  (zencoding-aif
+   (string-match "\\(?:[ #0-9$]\\|-[0-9]\\)" exp)
+   (list (substring exp 0 it) (substring exp it))
+   (list exp nil)))
+
+(defun zencoding-css-split-vendor-prefixes (input)
+  (zencoding-parse
+   "\\(-[wmso]+-\\|-\\|\\)\\(.*\\)" 3 "css vendor prefixes"
+   (list (elt it 2)
+         (let ((vp (elt it 1)))
+           (if (not (string= vp ""))
+               (if (string= vp "-") 'auto
+                 (string-to-list (subseq vp 1 -1))))))))
 
 (defun zencoding-css-subexpr (exp)
-  (let* ((importantp (zencoding-css-important-p exp))
-         (exp (zencoding-css-split-args
-               (if importantp (subseq exp 0 -1) exp)))
-         (args (cdr exp)))
-    (setf (cdr exp) (cons importantp (zencoding-css-parse-args args)))
-    exp))
+  (let* ((importantp (zencoding-css-important-p exp)))
+    (destructuring-bind (exp vp)
+        (zencoding-css-split-vendor-prefixes exp)
+      (destructuring-bind (key args)
+          (zencoding-css-split-args (if importantp (subseq exp 0 -1) exp))
+        `(,key ,vp
+               ,importantp
+               ,@(zencoding-css-parse-args args))))))
 
 (defun zencoding-css-toknize (str)
   (let* ((i (split-string str "+"))
@@ -1614,7 +3171,8 @@ tbl))
      (let ((f (first i))
            (s (second i)))
        (if f
-           (if (and s (or (string= s "") (string-match "^[#0-9$-]" s)))
+           (if (and s (or (string= s "")
+                          (string-match "^\\(?:[ #0-9$]\\|-[0-9]\\)" s)))
                (progn
                  (setf rt (cons (concat f "+" s) rt))
                  (setf i (cddr i)))
@@ -1633,7 +3191,7 @@ tbl))
 
 (zencoding-defparameter
  zencoding-css-unitless-properties
- '("z-index" "line-height" "opacity" "font-weight" "zoom"))
+ (gethash "unitlessProperties" (gethash "css" zencoding-preferences)))
 
 (zencoding-defparameter
  zencoding-css-unitless-properties-regex
@@ -1642,12 +3200,18 @@ tbl))
          "\\):.*$"))
 
 (defun zencoding-css-instantiate-lambda (str)
-  (flet ((split-string-to-body
+  (flet ((insert-space-between-name-and-body
+          (str)
+          (if (string-match "^\\([a-z-]+:\\)\\(.+\\)$" str)
+              (zencoding-join-string
+               (mapcar (lambda (ref) (match-string ref str)) '(1 2)) " ")
+            str))
+         (split-string-to-body
           (str args-sym)
           (let ((rt '(concat)) (idx-max 0))
             (loop for i from 0 to 255 do
                   (zencoding-aif
-                   (string-match "\\(?:|\\|${\\(?:\\([0-9]\\):\\|\\)\\(?:\\(.+?\\)\\|\\)}\\)" str)
+                   (string-match "\\(?:|\\|${\\(?:\\([0-9]\\)\\|\\)\\(?::\\(.+?\\)\\|\\)}\\)" str)
                    (destructuring-bind (mat idx def)
                        (mapcar (lambda (ref) (match-string ref str)) '(0 1 2))
                      (setf rt
@@ -1661,7 +3225,8 @@ tbl))
                      (setf str (substring str (+ it (length mat)))))
                    ;; don't use nreverse. cause bug in emacs-lisp.
                    (return (cons idx-max (reverse (cons str rt)))))))))
-    (let ((args (gensym)))
+    (let ((args (gensym))
+          (str  (insert-space-between-name-and-body str)))
       (destructuring-bind (idx-max . body) (split-string-to-body str args)
         (eval
          `(lambda (&rest ,args)
@@ -1672,29 +3237,52 @@ tbl))
                              (nthcdr ,idx-max ,args) " "))))
               ,body)))))))
 
+(zencoding-defparameter
+ zencoding-vendor-prefixes-properties
+ (gethash "vendorPrefixesProperties" (gethash "css" zencoding-preferences)))
+(zencoding-defparameter
+ zencoding-vendor-prefixes-default
+ (list "webkit" "moz" "ms" "o"))
+(defun zencoding-css-transform-vendor-prefixes (line vp)
+  (let ((key (subseq line 0 (or (position ?: line) (length line)))))
+    (let ((vps (if (eql vp 'auto)
+                   (gethash key
+                            zencoding-vendor-prefixes-properties
+                            zencoding-vendor-prefixes-default)
+                 (mapcar (lambda (v)
+                           (cond ((= v ?w) "webkit")
+                                 ((= v ?m) "moz")
+                                 ((= v ?s) "ms")
+                                 ((= v ?o) "o")))
+                         vp))))
+      (zencoding-join-string
+       (append (mapcar (lambda (v) (concat "-" v "-" line)) vps)
+               (list line))
+       "\n"))))
+
 (defun zencoding-css-transform-exprs (exprs)
   (zencoding-join-string
    (mapcar
     #'(lambda (expr)
-        (zencoding-aif
-         (gethash (car expr) zencoding-css-snippets)
-         (let ((set it) (fn nil) (unitlessp nil))
-           (if (stringp set)
-               (progn
-                 ;; new pattern
-                 ;; creating print function
-                 (setf fn (zencoding-css-instantiate-lambda set))
-                 ;; get unitless or no
-                 (setf unitlessp
-                       (not (null (string-match
-                                   zencoding-css-unitless-properties-regex set))))
-                 ;; caching
-                 (puthash (car expr) (cons fn unitlessp) zencoding-css-snippets))
-             (progn
-               ;; cache hit.
-               (setf fn (car set))
-               (setf unitlessp (cdr set))))
-           (let ((transformed
+        (let ((basement
+               (zencoding-aif
+                (gethash (car expr) zencoding-css-snippets)
+                (let ((set it) (fn nil) (unitlessp nil))
+                  (if (stringp set)
+                      (progn
+                        ;; new pattern
+                        ;; creating print function
+                        (setf fn (zencoding-css-instantiate-lambda set))
+                        ;; get unitless or no
+                        (setf unitlessp
+                              (not (null (string-match
+                                          zencoding-css-unitless-properties-regex set))))
+                        ;; caching
+                        (puthash (car expr) (cons fn unitlessp) zencoding-css-snippets))
+                    (progn
+                      ;; cache hit.
+                      (setf fn (car set))
+                      (setf unitlessp (cdr set))))
                   (apply fn
                          (mapcar
                           #'(lambda (arg)
@@ -1702,19 +3290,23 @@ tbl))
                                   (if unitlessp (car arg)
                                     (apply #'concat arg))
                                 arg))
-                          (cddr expr)))))
-             (if (cadr expr)
-                 (concat (subseq transformed 0 -1) " !important;")
-               transformed)))
-         (concat (car expr) ":"
-                 (zencoding-join-string
-                  (mapcar #'(lambda (arg)
-                              (if (listp arg) (apply #'concat arg) arg))
-                          (cdr expr)) " ")
-                 ";")))
+                          (cdddr expr))))
+                (concat (car expr) ": "
+                        (zencoding-join-string
+                         (mapcar #'(lambda (arg)
+                                     (if (listp arg) (apply #'concat arg) arg))
+                                 (cdddr expr)) " ")
+                        ";"))))
+          (let ((line
+                 (if (caddr expr)
+                     (concat (subseq basement 0 -1) " !important;")
+                   basement)))
+            (zencoding-aif
+             (cadr expr)
+             (zencoding-css-transform-vendor-prefixes line it)
+             line))))
     exprs)
    "\n"))
-
 
 (defun zencoding-css-transform (input)
   (zencoding-css-transform-exprs (zencoding-css-expr input)));;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
